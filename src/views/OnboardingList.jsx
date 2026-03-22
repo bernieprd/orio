@@ -151,6 +151,7 @@ function DetailDrawer({ entry, onClose }) {
               <span><span className="font-semibold text-warm-700">{entry.apps}</span> apps provisioned</span>
               <span><span className="font-semibold text-warm-700">{entry.duration}</span> total time</span>
             </div>
+            <div className="text-xs text-warm-400 mt-2">Estimated monthly license cost: €425/mo</div>
           </div>
 
           {/* App breakdown */}

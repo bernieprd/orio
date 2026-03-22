@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { Plus, LayoutTemplate, ChevronDown, LayoutGrid } from 'lucide-react'
+import { Plus, LayoutTemplate, ChevronDown, LayoutGrid, SlidersHorizontal } from 'lucide-react'
 import TemplateCard from '../components/TemplateCard.jsx'
 import Toast from '../components/Toast.jsx'
 import { departmentColors } from '../data/mockData.js'
@@ -114,7 +114,7 @@ function DeptSection({ dept, templates, onEdit, onDuplicate, onDelete }) {
   )
 }
 
-export default function TemplatesList({ navigate, templates, toast: initialToast, onDuplicate, onDelete }) {
+export default function TemplatesList({ navigate, templates, toast: initialToast, onDuplicate, onDelete, deptDefaults }) {
   const [toast,   setToast]   = useState(initialToast ?? null)
   const [sort,    setSort]    = useState('edited')
   const [grouped, setGrouped] = useState(false)
@@ -167,6 +167,14 @@ export default function TemplatesList({ navigate, templates, toast: initialToast
               Group by dept
             </button>
             <SortDropdown value={sort} onChange={setSort} />
+            <button
+              onClick={() => navigate('dept-defaults')}
+              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-violet-200 bg-violet-50 text-violet-600 hover:bg-violet-100 text-sm font-medium transition-colors duration-150"
+            >
+              <SlidersHorizontal size={13} />
+              Dept. Defaults
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-500 leading-none">Beta</span>
+            </button>
           </div>
 
           {/* Grid or grouped sections */}

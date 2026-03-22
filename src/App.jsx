@@ -5,7 +5,8 @@ import TemplatesList from './views/TemplatesList.jsx'
 import TemplateEditor from './views/TemplateEditor.jsx'
 import OnboardingList from './views/OnboardingList.jsx'
 import OnboardingFlow from './views/OnboardingFlow.jsx'
-import { templates as initialTemplates, activityFeed as initialActivity } from './data/mockData.js'
+import DeptDefaults from './views/DeptDefaults.jsx'
+import { templates as initialTemplates, activityFeed as initialActivity, departmentDefaults as initialDeptDefaults } from './data/mockData.js'
 
 const SIDEBAR_ACTIVE = {
   templates:        'templates',
@@ -13,6 +14,7 @@ const SIDEBAR_ACTIVE = {
   'template-edit':  'templates',
   onboarding:       'onboarding',
   'onboarding-new': 'onboarding',
+  'dept-defaults':  'templates',
 }
 
 // ── Skeleton ───────────────────────────────────────────────────────────────
@@ -43,6 +45,7 @@ export default function App() {
   const [viewKey, setViewKey]           = useState(0)
   const [templates, setTemplates]       = useState(initialTemplates)
   const [activityFeed, setActivityFeed] = useState(initialActivity)
+  const [deptDefaults, setDeptDefaults] = useState(initialDeptDefaults)
   const navTimer                        = useRef(null)
 
   const navigate = useCallback((view, params = {}) => {
@@ -111,13 +114,15 @@ export default function App() {
       case 'templates':
         return <TemplatesList navigate={navigate} templates={templates} toast={viewParams.toast} onDuplicate={duplicateTemplate} onDelete={deleteTemplate} />
       case 'template-new':
-        return <TemplateEditor navigate={navigate} templateId={null} templates={templates} onSave={saveTemplate} />
+        return <TemplateEditor navigate={navigate} templateId={null} templates={templates} onSave={saveTemplate} deptDefaults={deptDefaults} />
       case 'template-edit':
-        return <TemplateEditor navigate={navigate} templateId={viewParams.id} templates={templates} onSave={saveTemplate} />
+        return <TemplateEditor navigate={navigate} templateId={viewParams.id} templates={templates} onSave={saveTemplate} deptDefaults={deptDefaults} />
       case 'onboarding':
         return <OnboardingList navigate={navigate} activityFeed={activityFeed} toast={viewParams.toast} />
       case 'onboarding-new':
         return <OnboardingFlow navigate={navigate} templates={templates} onSaveOnboarding={addOnboarding} />
+      case 'dept-defaults':
+        return <DeptDefaults navigate={navigate} deptDefaults={deptDefaults} onSave={(dept, apps) => setDeptDefaults(prev => ({ ...prev, [dept]: apps }))} />
       default:
         return <TemplatesList navigate={navigate} templates={templates} />
     }

@@ -6,6 +6,7 @@ import {
   Settings,
   LayoutTemplate,
   UserPlus,
+  UserMinus,
   Zap,
 } from 'lucide-react'
 
@@ -17,8 +18,9 @@ const NAV_MAIN = [
 ]
 
 const NAV_AUTOMATION = [
-  { icon: LayoutTemplate, label: 'Templates',  view: 'templates'  },
-  { icon: UserPlus,       label: 'Onboarding', view: 'onboarding' },
+  { icon: LayoutTemplate, label: 'Templates',   view: 'templates'  },
+  { icon: UserPlus,       label: 'Onboarding',  view: 'onboarding' },
+  { icon: UserMinus,      label: 'Offboarding', view: null         },
 ]
 
 const NAV_BOTTOM = [
@@ -67,6 +69,21 @@ export default function Sidebar({ currentView, onNavigate }) {
         <div className="relative ml-3 pl-3 border-l-2 border-coral-200 flex flex-col gap-0.5">
           {NAV_AUTOMATION.map(({ icon: Icon, label, view }) => {
             const isActive = currentView === view
+            const isComingSoon = view === null
+            if (isComingSoon) {
+              return (
+                <div
+                  key={label}
+                  className="flex items-center gap-3 px-3 py-2 rounded text-warm-300 cursor-not-allowed select-none"
+                >
+                  <Icon size={18} strokeWidth={1.75} />
+                  <span className="text-sm font-medium">{label}</span>
+                  <span className="ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-warm-100 text-warm-400 leading-none">
+                    Soon
+                  </span>
+                </div>
+              )
+            }
             return (
               <button
                 key={view}

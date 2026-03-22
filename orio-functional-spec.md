@@ -418,16 +418,41 @@ For the demo, make one app fail on first attempt. Show:
     Toast.jsx            — Fixed top-right toast, slide-in, auto-dismiss 4s
   /data
     mockData.js          — templates, appsCatalog, onboardingHistory, activityFeed,
-                           departmentColors, appColors
+                           departmentColors, appColors, departmentDefaults
   /views
-    TemplatesList.jsx    — Grid + sort/group toolbar
+    TemplatesList.jsx    — Grid + sort/group toolbar + Dept. Defaults entry point
     TemplateEditor.jsx   — Two-column editor with live preview
     OnboardingList.jsx   — Stat cards + activity feed + detail drawer
     OnboardingFlow.jsx   — 3-step flow (EmployeeStep, ReviewStep, ProvisioningStep)
+    DeptDefaults.jsx     — Beta view for editing per-department default apps
     ~~ActivityDashboard.jsx~~ — Deleted; content merged into OnboardingList
 ```
 
 > **Note: Several components from the original spec were not created as separate files** (AppRow, StatusIndicator, StatCard, ActivityEntry, DetailDrawer) — their logic was inlined into the relevant view components.
+
+---
+
+## v2 Signals (added to prototype)
+
+These additions are not core MVP features. They are deliberate forward-looking signals added to the prototype to demonstrate product thinking and generate discussion during the design challenge presentation.
+
+**Offboarding sidebar item**
+- Added a non-functional "Offboarding" nav item under AUTOMATION with a "Coming soon" muted pill badge
+- Why: signals the product roadmap without building anything. Offboarding is the #2 pain point (security risk from orphaned accounts, wasted licenses) and the natural next step once the template model is validated.
+
+**License cost hint**
+- Added "Estimated monthly license cost: €X/mo" as secondary text in the onboarding flow's Access Review step (Step 2 summary bar) and in the onboarding detail drawer
+- Why: Orio's differentiator is connecting access decisions to cost impact. This is a data-model signal — the MVP already knows which apps are in a template, and apps have license costs in Orio's billing layer. Surfacing the number here is a low-effort way to demonstrate cost-awareness without building the full cost engine (scoped for v2).
+
+**Department Defaults (Beta)**
+- Added a "Dept. Defaults" view (flagged Beta), accessible via a toolbar button on the Templates screen, where admins configure which apps auto-populate when a department is selected in the Template Editor
+- In the Template Editor, selecting a department shows a "Pre-fill with [Department] defaults?" callout with Apply/Dismiss options
+- Why: addresses the L1 learning (layered templates). Departments share a base set of apps — configuring these defaults eliminates repetitive setup when creating new templates. Flagged as Beta because the flat template model works for v1; this is the stepping stone toward full template inheritance.
+
+**Permission level hint on app rows**
+- Added a muted "Member" pill badge on each app row in the Template Editor and Department Defaults view, with a hover tooltip: "Access levels coming soon — Admin, Member, Viewer"
+- The pill is visually present but disabled (cursor-not-allowed, dimmed style) — no dropdown, no state
+- Why: the L1 learning (layered templates) identified that roles within a department need different permission levels per app (e.g., Designer = Figma Editor, PM = Figma Viewer). This hint signals that the data model is ready for granular access levels without building the full feature. It gives reviewers something concrete to discuss when asking "what comes next?" — and the answer connects directly to template inheritance and department overrides.
 
 ---
 

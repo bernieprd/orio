@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { ArrowLeft, Plus, X, Layers, LayoutTemplate, Info } from 'lucide-react'
 import AppSearchModal from '../components/AppSearchModal.jsx'
 import Toast from '../components/Toast.jsx'
-import { departmentColors, appColors } from '../data/mockData.js'
+import { departmentColors, appColors, appsCatalog } from '../data/mockData.js'
 
 const DEPARTMENTS = [
   'Product', 'Engineering', 'Sales', 'Marketing',
@@ -141,7 +141,7 @@ function LivePreview({ form }) {
 
 // ─── Main editor ─────────────────────────────────────────────────────────────
 
-export default function TemplateEditor({ navigate, templateId, templates, onSave }) {
+export default function TemplateEditor({ navigate, templateId, templates, onSave, deptDefaults = {} }) {
   const existing = templateId ? templates.find((t) => t.id === templateId) : null
 
   const [form, setForm] = useState({
@@ -152,9 +152,26 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
   })
 
   const [showModal, setShowModal] = useState(false)
+  const [defaultsBanner, setDefaultsBanner] = useState(null) // dept name or null
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }))
+  }
+
+  function selectDepartment(dept) {
+    const next = form.department === dept ? '' : dept
+    update('department', next)
+    setDefaultsBanner(next && deptDefaults[next]?.length ? next : null)
+  }
+
+  function applyDefaults() {
+    const names = deptDefaults[defaultsBanner] ?? []
+    const toAdd = names
+      .filter(name => !form.apps.some(a => a.name === name))
+      .map(name => appsCatalog.find(a => a.name === name))
+      .filter(Boolean)
+    setForm(f => ({ ...f, apps: [...f.apps, ...toAdd] }))
+    setDefaultsBanner(null)
   }
 
   function removeApp(appName) {
@@ -252,7 +269,7 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
                   return (
                     <button
                       key={dept}
-                      onClick={() => update('department', isSelected ? '' : dept)}
+                      onClick={() => selectDepartment(dept)}
                       className={`
                         px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150
                         ${isSelected && colors
@@ -267,6 +284,29 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
                 })}
               </div>
             </div>
+
+            {/* Department defaults banner */}
+            {defaultsBanner && (
+              <div className="mt-3 flex items-center gap-3 px-3.5 py-2.5 rounded-lg bg-violet-50 border border-violet-100">
+                <span className="text-base leading-none">✨</span>
+                <span className="flex-1 text-xs text-violet-700">
+                  <span className="font-semibold px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-600 mr-1.5 text-[10px] uppercase tracking-wide">Beta</span>
+                  Pre-fill with <span className="font-semibold">{defaultsBanner}</span> defaults?
+                </span>
+                <button
+                  onClick={applyDefaults}
+                  className="flex-shrink-0 px-2.5 py-1 rounded-md bg-violet-100 hover:bg-violet-200 text-violet-700 text-xs font-semibold transition-colors duration-150"
+                >
+                  Apply defaults
+                </button>
+                <button
+                  onClick={() => setDefaultsBanner(null)}
+                  className="flex-shrink-0 text-xs text-violet-400 hover:text-violet-600 transition-colors duration-150"
+                >
+                  No thanks
+                </button>
+              </div>
+            )}
 
             {/* Description */}
             <div style={{ paddingTop: '1.25rem' }}>
@@ -335,6 +375,12 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
                     >
                       <AppIcon app={app} size={32} />
                       <span className="flex-1 text-sm font-medium text-warm-800">{app.name}</span>
+                      <span
+                        title="Access levels coming soon — Admin, Member, Viewer"
+                        className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-warm-100 text-warm-400 cursor-not-allowed select-none opacity-70"
+                      >
+                        Member
+                      </span>
                       <button
                         onClick={() => removeApp(app.name)}
                         className="

@@ -300,6 +300,19 @@ export const activityFeed = [
   },
 ]
 
+// ─── Department default apps ──────────────────────────────────────────────────
+
+export const departmentDefaults = {
+  Product:     ['Figma', 'Notion', 'Slack', 'Jira', 'Linear'],
+  Engineering: ['GitHub', 'VS Code', 'Slack', 'Jira', 'Notion', 'AWS'],
+  Sales:       ['Salesforce', 'Slack', 'Notion', 'HubSpot', 'Gong'],
+  HR:          ['BambooHR', 'Slack', 'Notion', 'Google Workspace', 'Lattice'],
+  Marketing:   ['Slack', 'Notion', 'Google Workspace', 'HubSpot', 'Loom'],
+  Finance:     ['Slack', 'Notion', 'Google Workspace', '1Password'],
+  Operations:  ['Slack', 'Notion', 'Google Workspace', 'Jira', 'Asana'],
+  Support:     ['Zendesk', 'Slack', 'Notion', 'Intercom', 'Jira'],
+}
+
 // ─── Department colors ────────────────────────────────────────────────────────
 
 export const departmentColors = {

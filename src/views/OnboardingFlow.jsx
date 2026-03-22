@@ -430,9 +430,12 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
           <ArrowLeft size={14} /> Back
         </button>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-warm-500">
-            <span className="font-semibold text-warm-900">{apps.length} app{apps.length !== 1 ? 's' : ''}</span> will be provisioned for <span className="font-semibold text-warm-900">{employee.firstName}</span>
-          </span>
+          <div className="text-right">
+            <span className="text-sm text-warm-500">
+              <span className="font-semibold text-warm-900">{apps.length} app{apps.length !== 1 ? 's' : ''}</span> will be provisioned for <span className="font-semibold text-warm-900">{employee.firstName}</span>
+            </span>
+            <div className="text-xs text-warm-400 mt-0.5">Estimated monthly license cost: €425/mo</div>
+          </div>
           <button
             onClick={() => onProvision(apps, removedApps)}
             disabled={apps.length === 0}
