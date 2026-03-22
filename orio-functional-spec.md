@@ -63,6 +63,8 @@ The "AUTOMATION" section should feel visually distinct — perhaps a subtle badg
 ### What the user sees
 A list of existing access templates displayed as cards in a grid (2–3 columns).
 
+> **Implemented as 3-column grid.**
+
 ### Template Card
 Each card shows:
 - **Template name** (e.g., "Product Designer") — prominent, bold
@@ -71,6 +73,24 @@ Each card shows:
 - **App icon row** — show the first 4–5 app icons (small, 24px), with "+N" if more
 - **Last edited** — relative timestamp (e.g., "Edited 2 days ago")
 - **Three-dot menu** → Edit, Duplicate, Delete (can be non-functional)
+
+> **Changed: Three-dot menu is fully functional** (not just decorative):
+> - **Edit** → opens Template Editor
+> - **Duplicate** → creates a copy prefixed "Copy of [name]", flagged with a "Review and save" amber badge below the app icon row. The copy is hidden from the Onboarding flow until reviewed and saved.
+> - **Delete** → inline confirm-before-delete state within the menu; removes the template.
+>
+> **Changed: "Design" department renamed to "Product"** across templates and department selectors.
+>
+> **Added: `needsAttention` flag** on duplicated templates. These cards show a "Review and save" amber pill badge (replacing last-edited timestamp in the footer). No special border or top badge — just the footer pill.
+
+### Sorting & Grouping
+
+> **Added: Toolbar above the grid (left-aligned) with two controls:**
+> - **Sort dropdown**: "Last edited" (default) | "A → Z"
+>   - ~~"Most accessed" was considered and removed~~
+>   - Sort is applied to the full list before rendering
+>   - Each template stores `editedAtMs` (numeric timestamp) for accurate sort; new saves and duplicates stamp `Date.now()`
+> - **"Group by dept" toggle button**: when active, breaks the grid into department sections with a colored department pill header and template count per section; sections sorted alphabetically
 
 ### Empty State
 If no templates exist, show a friendly illustration or icon with:
@@ -84,63 +104,47 @@ If no templates exist, show a friendly illustration or icon with:
 - Clicking "+ New Template" opens Screen 2 in blank state
 
 ### Mock Data — Pre-populated Templates
+
+> **Changed: "Design" → "Product" department on tpl-1.**
+> **Added: `editedAtMs` (numeric timestamp) and `accessCount` fields** to all templates for sort support.
+
 ```json
 [
   {
     "id": "tpl-1",
     "name": "Product Designer",
-    "department": "Design",
-    "apps": [
-      {"name": "Figma", "icon": "figma"},
-      {"name": "Notion", "icon": "notion"},
-      {"name": "Slack", "icon": "slack"},
-      {"name": "Jira", "icon": "jira"},
-      {"name": "Linear", "icon": "linear"}
-    ],
-    "editedAt": "2 days ago"
+    "department": "Product",
+    "apps": ["Figma", "Notion", "Slack", "Jira", "Linear"],
+    "editedAt": "2 days ago",
+    "editedAtMs": "<Date.now() - 2 days>",
+    "accessCount": 1
   },
   {
     "id": "tpl-2",
     "name": "Frontend Engineer",
     "department": "Engineering",
-    "apps": [
-      {"name": "GitHub", "icon": "github"},
-      {"name": "VS Code", "icon": "vscode"},
-      {"name": "Slack", "icon": "slack"},
-      {"name": "Jira", "icon": "jira"},
-      {"name": "Notion", "icon": "notion"},
-      {"name": "AWS", "icon": "aws"},
-      {"name": "Datadog", "icon": "datadog"},
-      {"name": "Linear", "icon": "linear"}
-    ],
-    "editedAt": "1 week ago"
+    "apps": ["GitHub", "VS Code", "Slack", "Jira", "Notion", "AWS", "Datadog", "Linear"],
+    "editedAt": "1 week ago",
+    "editedAtMs": "<Date.now() - 7 days>",
+    "accessCount": 2
   },
   {
     "id": "tpl-3",
     "name": "Account Executive",
     "department": "Sales",
-    "apps": [
-      {"name": "Salesforce", "icon": "salesforce"},
-      {"name": "Slack", "icon": "slack"},
-      {"name": "Notion", "icon": "notion"},
-      {"name": "Gong", "icon": "gong"},
-      {"name": "HubSpot", "icon": "hubspot"},
-      {"name": "Google Workspace", "icon": "google"}
-    ],
-    "editedAt": "3 days ago"
+    "apps": ["Salesforce", "Slack", "Notion", "Gong", "HubSpot", "Google Workspace"],
+    "editedAt": "3 days ago",
+    "editedAtMs": "<Date.now() - 3 days>",
+    "accessCount": 1
   },
   {
     "id": "tpl-4",
     "name": "People Operations",
     "department": "HR",
-    "apps": [
-      {"name": "BambooHR", "icon": "bamboohr"},
-      {"name": "Slack", "icon": "slack"},
-      {"name": "Notion", "icon": "notion"},
-      {"name": "Google Workspace", "icon": "google"},
-      {"name": "Lattice", "icon": "lattice"}
-    ],
-    "editedAt": "5 days ago"
+    "apps": ["BambooHR", "Slack", "Notion", "Google Workspace", "Lattice"],
+    "editedAt": "5 days ago",
+    "editedAtMs": "<Date.now() - 5 days>",
+    "accessCount": 1
   }
 ]
 ```
@@ -164,11 +168,17 @@ Two-column layout:
 
 **Department** (dropdown/select)
 - Options: Design, Engineering, Sales, Marketing, HR, Finance, Operations, Support
+
+> **Changed: Department rendered as pill tags** (not a dropdown). User taps a pill to select a department; selected pill gets colored background matching the department color.
+> **Changed: "Design" option renamed to "Product".**
+
 - Shown as a colored tag after selection
 
 **Description** (optional textarea)
 - Placeholder: "Describe when this template should be used..."
 - 2–3 lines max
+
+> **Added: "Show more / Show less" toggle** in the live preview when description overflows.
 
 **Apps Section**
 - Section header: "Applications" with count badge (e.g., "5 apps")
@@ -205,6 +215,10 @@ A card that mirrors what the template looks like "from the outside":
 - **"Cancel"** link (secondary, returns to list)
 - On save: show a toast notification "Template saved successfully" and redirect to the templates list
 
+> **Changed: Navigation to templates list happens immediately on save** (no delay). Toast message is carried via `viewParams` and rendered by TemplatesList on mount.
+> **Changed: Toast has no checkmark icon** — the icon alone is sufficient.
+> **Changed: Saving a template clears `needsAttention`** and stamps `editedAt: "just now"` + `editedAtMs: Date.now()`.
+
 ---
 
 ## Screen 3: Onboarding Flow
@@ -219,6 +233,9 @@ Similar structure to templates list but shows recent onboarding events:
 - Status badge (Completed / In Progress / Partial Failure)
 - App count
 
+> **Changed: List is live** — new onboardings completed in the flow are prepended to this list.
+> **Removed: "Template removed" warning** on rows where the source template was deleted (originally planned, later removed to keep the list clean).
+
 **Primary CTA**: "+ New Onboarding" button
 
 ### 3b. New Onboarding Flow
@@ -227,10 +244,24 @@ This is a **multi-step flow** (not a single form). Steps should feel lightweight
 
 #### Step 1: Employee Details
 - **Name** (text input) — required
+
+> **Changed: Name split into First Name + Last Name** (two separate inputs in a 2-column grid).
+
 - **Email** (text input) — required
+
+> **Added: Email auto-generation** from `firstName.lastName@company.com`. Auto-populates as the user types their name. Stops auto-updating once the user manually edits the email field.
+
 - **Department** (dropdown) — required
+
+> **Changed: Department rendered as pill tags**, consistent with the Template Editor. Uses the same department color system.
+
 - **Role** (text input) — required
+
+> **Added: Template suggestion chips** below the role input when a department is selected. Shows all templates for that department as clickable chips (name + app count). Clicking a chip fills the role field and pre-selects that template for Step 2. Chips are styled with a sparkle (✨) "Suggested:" label.
+
 - **Start Date** (date picker) — required
+
+> **Changed: Custom calendar date picker** (no library). Month navigation grid with coral highlight on selected day and a today indicator.
 
 On filling Department + Role, the system should suggest a matching template (if one exists). Show a subtle inline message: "✨ We found a matching template: **Product Designer** — 5 apps"
 
@@ -242,6 +273,9 @@ This is the core screen — what the IT admin sees before provisioning.
 **Header area**:
 - Employee summary: Name, Email, Department, Role, Start Date (compact, in a summary card)
 - Template used: "[Template name]" with option to "Change template"
+
+> **Added: "Change template" opens a modal** listing all ready templates (filtered — `needsAttention` templates excluded). Selecting a template replaces the app list with that template's apps.
+> **Note: Templates with `needsAttention: true` are excluded from the entire onboarding flow** (both suggestions in Step 1 and the template picker in Step 2). They become available only after being reviewed and saved.
 
 **App list** (the access package):
 Each app displayed as a card/row:
@@ -279,10 +313,15 @@ Then, the provisioning status screen:
   - [View in Activity Log] [Onboard Another Employee]
 
 **Error state** (show for one app to demonstrate awareness):
-For the demo, make one app (e.g., Jira) fail on first attempt. Show:
-- ❌ Jira — "Connection timed out" — [Retry]
+
+> **Changed: The failing app is always the app at index 2** (not specifically Jira — whichever app is third in the list for that onboarding). This makes the error state work regardless of the template selected.
+
+For the demo, make one app fail on first attempt. Show:
+- ❌ [App] — "Connection timed out" — [Retry]
 - On clicking Retry, animate it going to ⏳ then ✅
 - Final summary: "5/5 apps provisioned (1 retry)"
+
+> **Added: Completed onboarding is saved to the Onboarding List.** Uses a `savedRef` guard to ensure the save fires exactly once. Status is `"partial"` if any app required a retry, `"completed"` otherwise.
 
 ---
 
@@ -313,6 +352,8 @@ Clicking an entry opens a **detail drawer** (slide-in from right):
 - Template used
 - Per-app breakdown: app icon + name + status + time taken
 - "Provisioned by Alex M. on Mar 22, 2026 at 10:15 AM"
+
+> **Status: Not yet built.** ActivityDashboard.jsx currently shows a placeholder. Mock data (`activityFeed`) is in `mockData.js` with full `appBreakdown` per entry.
 
 ### Mock Activity Data
 ```json
@@ -382,38 +423,43 @@ Clicking an entry opens a **detail drawer** (slide-in from right):
 
 ## Technical Requirements
 
-- **Framework**: React (single .jsx file for the artifact, or a small multi-file project)
-- **Styling**: Tailwind CSS utility classes
-- **Routing**: Use React state to simulate routing (useState for currentView), or React Router if multi-file
+- **Framework**: React 18 + Vite 6
+- **Styling**: Tailwind CSS v3 utility classes
+
+> **Note: Tailwind JIT limitation** — dynamically constructed class strings (e.g. `space-y-${n}`) are not generated at build time. Workaround: use inline `style={{}}` for dynamic spacing values and add a `safelist` regex in `tailwind.config.js` to pre-generate spacing utilities.
+
+- **Routing**: Use React state to simulate routing (`useState` for `currentView` + `viewParams` in App.jsx)
 - **Data**: All data is hardcoded/mocked — no API calls
-- **App icons**: Use colored circles with the first letter of the app name as a fallback, or use Lucide icons where applicable. For well-known apps, you can use simple SVG logos or emoji representations.
+
+> **State architecture**: `templates` and `onboardingHistory` are lifted to `App.jsx`, seeded from `mockData.js` constants. Mutation handlers (`saveTemplate`, `duplicateTemplate`, `deleteTemplate`, `addOnboarding`) are defined in App and passed down as props.
+
+- **App icons**: Colored squares (not circles) with first letter of the app name, using a deterministic color map in `appColors` (mockData.js)
 - **Responsiveness**: Desktop-only is fine (1280px+ viewport). This is an enterprise admin tool.
 
 ---
 
-## File Structure (if multi-file)
+## File Structure (actual)
 ```
 /src
-  App.jsx            — Main app shell, routing, sidebar
+  App.jsx                — Main app shell, routing, all lifted state, mutation handlers
   /components
-    Sidebar.jsx       — Navigation sidebar
-    TopBar.jsx        — Breadcrumbs + user info
-    TemplateCard.jsx  — Card component for template list
-    AppRow.jsx        — App row with icon, name, remove
-    AppSearchModal.jsx — Searchable app catalog
-    StatusIndicator.jsx — Provisioning status (loading/success/fail)
-    StatCard.jsx      — Dashboard stat card
-    ActivityEntry.jsx — Activity feed row
-    DetailDrawer.jsx  — Slide-in detail panel
+    Sidebar.jsx          — Navigation sidebar
+    TopBar.jsx           — Breadcrumbs + user info
+    TemplateCard.jsx     — Card component for template list (with ThreeDotMenu inline)
+    AppSearchModal.jsx   — Searchable app catalog modal
+    Toast.jsx            — Fixed top-right toast, slide-in, auto-dismiss 4s
   /data
-    mockData.js       — All mock templates, apps, employees, activity
+    mockData.js          — templates, appsCatalog, onboardingHistory, activityFeed,
+                           departmentColors, appColors
   /views
-    TemplatesList.jsx
-    TemplateEditor.jsx
-    OnboardingList.jsx
-    OnboardingFlow.jsx
-    ActivityDashboard.jsx
+    TemplatesList.jsx    — Grid + sort/group toolbar
+    TemplateEditor.jsx   — Two-column editor with live preview
+    OnboardingList.jsx   — Table of past onboardings
+    OnboardingFlow.jsx   — 3-step flow (EmployeeStep, ReviewStep, ProvisioningStep)
+    ActivityDashboard.jsx — Placeholder (not yet built)
 ```
+
+> **Note: Several components from the original spec were not created as separate files** (AppRow, StatusIndicator, StatCard, ActivityEntry, DetailDrawer) — their logic was inlined into the relevant view components.
 
 ---
 
