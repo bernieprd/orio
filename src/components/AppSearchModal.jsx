@@ -1,19 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Search, Check, X } from 'lucide-react'
-import { appsCatalog, appColors } from '../data/mockData.js'
-
-function AppIcon({ app, size = 32 }) {
-  const color = appColors[app.icon] ?? '#8F8B82'
-  return (
-    <div
-      title={app.name}
-      style={{ backgroundColor: color, width: size, height: size, fontSize: size * 0.38 }}
-      className="rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold shadow-sm"
-    >
-      {app.name.charAt(0).toUpperCase()}
-    </div>
-  )
-}
+import { appsCatalog } from '../data/mockData.js'
+import AppIcon from './AppIcon.jsx'
 
 export default function AppSearchModal({ addedApps, onToggle, onClose }) {
   const [query, setQuery] = useState('')
@@ -95,7 +83,7 @@ export default function AppSearchModal({ addedApps, onToggle, onClose }) {
                     }
                   `}
                 >
-                  <AppIcon app={app} size={32} />
+                  <AppIcon name={app.name} icon={app.icon} size={32} />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-semibold text-warm-900">{app.name}</div>
                     <div className="text-xs text-warm-400">{app.category}</div>
