@@ -1,30 +1,65 @@
-import { useState } from 'react'
-import { appColors, appLogoDomains } from '../data/mockData.js'
+import {
+  siFigma, siNotion, siJira, siLinear,
+  siGithub, siGitlab, siHubspot, siDatadog, siSentry,
+  siLoom, siMiro, siConfluence, si1password,
+  siZoom, siIntercom, siZendesk, siAsana, siAirtable,
+  siPostman, siDocker, siTerraform, siGoogle,
+} from 'simple-icons'
+import { appColors } from '../data/mockData.js'
+
+const SI_MAP = {
+  figma:       siFigma,
+  notion:      siNotion,
+  jira:        siJira,
+  linear:      siLinear,
+  github:      siGithub,
+  gitlab:      siGitlab,
+  hubspot:     siHubspot,
+  datadog:     siDatadog,
+  sentry:      siSentry,
+  loom:        siLoom,
+  miro:        siMiro,
+  confluence:  siConfluence,
+  '1password': si1password,
+  zoom:        siZoom,
+  intercom:    siIntercom,
+  zendesk:     siZendesk,
+  asana:       siAsana,
+  airtable:    siAirtable,
+  postman:     siPostman,
+  docker:      siDocker,
+  terraform:   siTerraform,
+  google:      siGoogle,
+}
 
 export default function AppIcon({ name, icon, size = 32 }) {
-  const [failed, setFailed] = useState(false)
   const key    = icon ?? name?.toLowerCase().replace(/[^a-z0-9]/g, '')
-  const domain = appLogoDomains[key]
-  const color  = appColors[key] ?? '#8F8B82'
+  const si     = SI_MAP[key]
   const radius = size <= 24 ? 'rounded-md' : 'rounded-lg'
 
-  if (domain && !failed) {
+  if (si) {
+    const bg = `#${si.hex}`
+    const iconSize = size * 0.58
     return (
       <div
         title={name}
-        style={{ width: size, height: size }}
-        className={`${radius} overflow-hidden flex-shrink-0 shadow-sm bg-white border border-warm-100 flex items-center justify-center`}
+        style={{ backgroundColor: bg, width: size, height: size }}
+        className={`${radius} flex items-center justify-center flex-shrink-0 shadow-sm`}
       >
-        <img
-          src={`https://logo.clearbit.com/${domain}`}
-          alt={name}
-          style={{ width: size * 0.72, height: size * 0.72, objectFit: 'contain' }}
-          onError={() => setFailed(true)}
-        />
+        <svg
+          role="img"
+          viewBox="0 0 24 24"
+          style={{ width: iconSize, height: iconSize }}
+          fill="white"
+        >
+          <path d={si.path} />
+        </svg>
       </div>
     )
   }
 
+  // Fallback: colored initial square
+  const color = appColors[key] ?? '#8F8B82'
   return (
     <div
       title={name}
