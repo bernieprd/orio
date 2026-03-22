@@ -2,27 +2,13 @@ import { useState, useCallback } from 'react'
 import { ArrowLeft, Plus, X, Layers, LayoutTemplate, Info } from 'lucide-react'
 import AppSearchModal from '../components/AppSearchModal.jsx'
 import Toast from '../components/Toast.jsx'
-import { departmentColors, appColors, appsCatalog } from '../data/mockData.js'
+import { departmentColors, appsCatalog } from '../data/mockData.js'
+import AppIcon from '../components/AppIcon.jsx'
 
 const DEPARTMENTS = [
   'Product', 'Engineering', 'Sales', 'Marketing',
   'HR', 'Finance', 'Operations', 'Support',
 ]
-
-// ─── Shared app icon ──────────────────────────────────────────────────────────
-
-function AppIcon({ app, size = 32 }) {
-  const color = appColors[app.icon] ?? '#8F8B82'
-  return (
-    <div
-      title={app.name}
-      style={{ backgroundColor: color, width: size, height: size, fontSize: size * 0.38 }}
-      className="rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold shadow-sm"
-    >
-      {app.name.charAt(0).toUpperCase()}
-    </div>
-  )
-}
 
 // ─── Live Preview card (right column) ────────────────────────────────────────
 
@@ -87,14 +73,7 @@ function LivePreview({ form }) {
           {form.apps.length > 0 ? (
             <div className="flex items-center gap-1.5 mb-4">
               {visibleApps.map((app) => (
-                <div
-                  key={app.name}
-                  title={app.name}
-                  style={{ backgroundColor: appColors[app.icon] ?? '#8F8B82' }}
-                  className="w-6 h-6 rounded-md flex items-center justify-center text-white font-bold text-[10px] shadow-sm flex-shrink-0"
-                >
-                  {app.name.charAt(0).toUpperCase()}
-                </div>
+                <AppIcon key={app.name} name={app.name} icon={app.icon} size={24} />
               ))}
               {overflow > 0 && (
                 <div className="w-6 h-6 rounded-md bg-warm-100 flex items-center justify-center text-[10px] font-bold text-warm-500 flex-shrink-0">
@@ -113,12 +92,7 @@ function LivePreview({ form }) {
             <div className="border-t border-warm-100 pt-3 space-y-2">
               {form.apps.map((app) => (
                 <div key={app.name} className="flex items-center gap-2">
-                  <div
-                    style={{ backgroundColor: appColors[app.icon] ?? '#8F8B82' }}
-                    className="w-6 h-6 rounded-md flex-shrink-0 text-white font-bold text-[10px] flex items-center justify-center shadow-sm"
-                  >
-                    {app.name.charAt(0).toUpperCase()}
-                  </div>
+                  <AppIcon name={app.name} icon={app.icon} size={20} />
                   <span className="text-xs text-warm-700">{app.name}</span>
                 </div>
               ))}
@@ -373,7 +347,7 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
                       key={app.name}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-warm-50 border border-warm-100 group"
                     >
-                      <AppIcon app={app} size={32} />
+                      <AppIcon name={app.name} icon={app.icon} size={32} />
                       <span className="flex-1 text-sm font-medium text-warm-800">{app.name}</span>
                       <span
                         title="Access levels coming soon — Admin, Member, Viewer"

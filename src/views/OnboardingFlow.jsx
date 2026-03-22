@@ -6,7 +6,8 @@ import {
   ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import AppSearchModal from '../components/AppSearchModal.jsx'
-import { departmentColors, appColors } from '../data/mockData.js'
+import AppIcon from '../components/AppIcon.jsx'
+import { departmentColors } from '../data/mockData.js'
 
 const DEPARTMENTS = [
   'Product', 'Engineering', 'Sales', 'Marketing',
@@ -21,18 +22,6 @@ const DAYS_SHORT = ['Su','Mo','Tu','We','Th','Fr','Sa']
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 
-function AppIcon({ app, size = 32 }) {
-  const color = appColors[app.icon] ?? '#8F8B82'
-  return (
-    <div
-      title={app.name}
-      style={{ backgroundColor: color, width: size, height: size, fontSize: size * 0.38 }}
-      className="rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold shadow-sm"
-    >
-      {app.name.charAt(0).toUpperCase()}
-    </div>
-  )
-}
 
 function fullName(emp) {
   return [emp.firstName, emp.lastName].filter(Boolean).join(' ')
@@ -413,7 +402,7 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
         ) : (
           apps.map((app, i) => (
             <div key={app.name} className={`flex items-center gap-3 px-4 py-3 group ${i < apps.length - 1 ? 'border-b border-warm-100' : ''}`}>
-              <AppIcon app={app} size={32} />
+              <AppIcon name={app.name} icon={app.icon} size={32} />
               <span className="flex-1 text-sm font-medium text-warm-800">{app.name}</span>
               <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Will be provisioned</span>
               <button onClick={() => removeApp(app.name)} className="opacity-0 group-hover:opacity-100 p-1 rounded text-warm-400 hover:text-red-400 hover:bg-red-50 transition-all duration-150 ml-1">
@@ -619,7 +608,7 @@ function ProvisioningStep({ employee, apps, removedApps = [], template, onSaveOn
               ${i < apps.length - 1 ? 'border-b border-warm-100' : ''}
             `}>
               <div className={`transition-all duration-300 ${st === 'skipped' ? 'opacity-40' : 'opacity-100'}`}>
-                <AppIcon app={app} size={32} />
+                <AppIcon name={app.name} icon={app.icon} size={32} />
               </div>
               <div className="flex-1 min-w-0">
                 <span className={`text-sm font-semibold transition-colors duration-300 ${st === 'skipped' ? 'text-warm-400' : 'text-warm-900'}`}>

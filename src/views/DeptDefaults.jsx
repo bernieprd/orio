@@ -2,25 +2,13 @@ import { useState } from 'react'
 import { Plus, X, ChevronDown, ChevronRight, SlidersHorizontal, ArrowLeft } from 'lucide-react'
 import AppSearchModal from '../components/AppSearchModal.jsx'
 import Toast from '../components/Toast.jsx'
-import { departmentColors, appColors, appsCatalog } from '../data/mockData.js'
+import { departmentColors, appsCatalog } from '../data/mockData.js'
+import AppIcon from '../components/AppIcon.jsx'
 
 const DEPARTMENTS = [
   'Product', 'Engineering', 'Sales', 'HR',
   'Marketing', 'Finance', 'Operations', 'Support',
 ]
-
-function AppIcon({ name, size = 28 }) {
-  const icon = appsCatalog.find(a => a.name === name)?.icon ?? name.toLowerCase()
-  const color = appColors[icon] ?? '#8F8B82'
-  return (
-    <div
-      style={{ backgroundColor: color, width: size, height: size, fontSize: size * 0.38 }}
-      className="rounded-lg flex items-center justify-center flex-shrink-0 text-white font-bold shadow-sm"
-    >
-      {name.charAt(0).toUpperCase()}
-    </div>
-  )
-}
 
 export default function DeptDefaults({ deptDefaults, onSave, navigate }) {
   const [expanded, setExpanded]     = useState(null)

@@ -326,6 +326,41 @@ export const departmentColors = {
   Support:     { bg: 'bg-indigo-100',  text: 'text-indigo-700'  },
 }
 
+// ─── App logo domains (for Clearbit logo API) ────────────────────────────────
+
+export const appLogoDomains = {
+  figma:       'figma.com',
+  notion:      'notion.so',
+  slack:       'slack.com',
+  jira:        'atlassian.com',
+  linear:      'linear.app',
+  github:      'github.com',
+  gitlab:      'gitlab.com',
+  vscode:      'code.visualstudio.com',
+  aws:         'aws.amazon.com',
+  google:      'google.com',
+  salesforce:  'salesforce.com',
+  hubspot:     'hubspot.com',
+  gong:        'gong.io',
+  datadog:     'datadoghq.com',
+  sentry:      'sentry.io',
+  bamboohr:    'bamboohr.com',
+  lattice:     'lattice.com',
+  loom:        'loom.com',
+  miro:        'miro.com',
+  confluence:  'confluence.atlassian.com',
+  '1password': '1password.com',
+  zoom:        'zoom.us',
+  intercom:    'intercom.com',
+  zendesk:     'zendesk.com',
+  asana:       'asana.com',
+  monday:      'monday.com',
+  airtable:    'airtable.com',
+  postman:     'postman.com',
+  docker:      'docker.com',
+  terraform:   'terraform.io',
+}
+
 // ─── App icon colors (deterministic by name) ──────────────────────────────────
 
 export const appColors = {

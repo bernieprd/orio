@@ -1,21 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { MoreHorizontal, Clock, Layers, Pencil, Copy, Trash2 } from 'lucide-react'
-import { departmentColors, appColors } from '../data/mockData.js'
+import { departmentColors } from '../data/mockData.js'
+import AppIcon from './AppIcon.jsx'
 
 const MAX_VISIBLE_ICONS = 5
-
-function AppIcon({ app }) {
-  const color = appColors[app.icon] ?? '#8F8B82'
-  return (
-    <div
-      title={app.name}
-      style={{ backgroundColor: color }}
-      className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 text-white font-bold text-[10px] shadow-sm"
-    >
-      {app.name.charAt(0).toUpperCase()}
-    </div>
-  )
-}
 
 function ThreeDotMenu({ onEdit, onDuplicate, onDelete }) {
   const [open,    setOpen]    = useState(false)
@@ -132,7 +120,7 @@ export default function TemplateCard({ template, onClick, onDuplicate, onDelete 
 
       {/* App icon row */}
       <div className="flex items-center gap-1.5 mb-4">
-        {visibleApps.map(app => <AppIcon key={app.name} app={app} />)}
+        {visibleApps.map(app => <AppIcon key={app.name} name={app.name} icon={app.icon} size={24} />)}
         {overflow > 0 && (
           <div className="w-6 h-6 rounded-md bg-warm-100 flex items-center justify-center text-[10px] font-bold text-warm-500 flex-shrink-0">
             +{overflow}

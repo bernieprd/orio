@@ -5,7 +5,8 @@ import {
   X, User, Mail, Briefcase, Calendar, XCircle,
   Users, Zap, Clock, AlertOctagon,
 } from 'lucide-react'
-import { departmentColors, appColors, appsCatalog } from '../data/mockData.js'
+import { departmentColors, appsCatalog } from '../data/mockData.js'
+import AppIcon from '../components/AppIcon.jsx'
 
 const AVATAR_COLORS = [
   'bg-violet-100 text-violet-600',
@@ -23,19 +24,6 @@ function avatarColor(str) {
 
 function getAppIcon(name) {
   return appsCatalog.find(a => a.name === name)?.icon ?? name.toLowerCase().replace(/[^a-z0-9]/g, '')
-}
-
-function AppIcon({ name, icon, size = 28 }) {
-  const color = appColors[icon ?? getAppIcon(name)] ?? '#8F8B82'
-  return (
-    <div
-      title={name}
-      style={{ backgroundColor: color, width: size, height: size, fontSize: size * 0.38 }}
-      className="rounded-md flex items-center justify-center flex-shrink-0 text-white font-bold shadow-sm"
-    >
-      {name.charAt(0).toUpperCase()}
-    </div>
-  )
 }
 
 function StatusBadge({ status }) {
