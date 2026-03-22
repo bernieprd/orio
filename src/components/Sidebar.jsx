@@ -6,7 +6,6 @@ import {
   Settings,
   LayoutTemplate,
   UserPlus,
-  Activity,
   Zap,
 } from 'lucide-react'
 
@@ -20,7 +19,6 @@ const NAV_MAIN = [
 const NAV_AUTOMATION = [
   { icon: LayoutTemplate, label: 'Templates',  view: 'templates'  },
   { icon: UserPlus,       label: 'Onboarding', view: 'onboarding' },
-  { icon: Activity,       label: 'Activity',   view: 'activity'   },
 ]
 
 const NAV_BOTTOM = [

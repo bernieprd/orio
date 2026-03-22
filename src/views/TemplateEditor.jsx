@@ -174,10 +174,13 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
   }
 
 
+  const canSave = form.name.trim() !== '' && form.department !== '' && form.apps.length > 0
+
   function handleSave() {
+    if (!canSave) return
     const saved = {
       id:          templateId ?? `tpl-${Date.now()}`,
-      name:        form.name || 'Untitled Template',
+      name:        form.name.trim(),
       department:  form.department,
       description: form.description,
       apps:        form.apps,
@@ -353,10 +356,12 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
           <div className="flex items-center gap-3 mt-5">
             <button
               onClick={handleSave}
+              disabled={!canSave}
               className="
-                px-5 py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 active:bg-coral-600
-                text-white text-sm font-semibold shadow-warm
+                px-5 py-2.5 rounded-lg text-sm font-semibold shadow-warm
                 transition-colors duration-150
+                disabled:bg-warm-200 disabled:text-warm-400 disabled:cursor-not-allowed disabled:shadow-none
+                bg-coral-400 hover:bg-coral-500 active:bg-coral-600 text-white
               "
             >
               Save Template
@@ -367,6 +372,15 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
             >
               Cancel
             </button>
+            {!canSave && (
+              <span className="text-xs text-warm-400">
+                {!form.name.trim()
+                  ? 'Add a template name to continue'
+                  : !form.department
+                  ? 'Select a department to continue'
+                  : 'Add at least one app to continue'}
+              </span>
+            )}
           </div>
         </div>
 

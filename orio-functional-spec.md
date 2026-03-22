@@ -48,6 +48,8 @@ The sidebar represents Orio's existing platform. Most items are non-functional (
 ── Settings         (dimmed, non-functional)
 ```
 
+> **Changed: Activity removed from the sidebar.** The AUTOMATION section now only has Templates and Onboarding.
+
 The "AUTOMATION" section should feel visually distinct — perhaps a subtle badge or accent indicating it's new.
 
 ### Top Bar
@@ -218,6 +220,13 @@ A card that mirrors what the template looks like "from the outside":
 > **Changed: Navigation to templates list happens immediately on save** (no delay). Toast message is carried via `viewParams` and rendered by TemplatesList on mount.
 > **Changed: Toast has no checkmark icon** — the icon alone is sufficient.
 > **Changed: Saving a template clears `needsAttention`** and stamps `editedAt: "just now"` + `editedAtMs: Date.now()`.
+>
+> **Added: Save validation guard (`canSave`).** The "Save Template" button is disabled until all three mandatory fields are filled:
+> - Template name (non-empty after trim)
+> - Department (a pill must be selected)
+> - At least one app added
+>
+> The button renders with `disabled` styling (muted gray, `cursor-not-allowed`) and an inline hint message below the action row tells the admin exactly which field is missing (e.g. "Add a template name to continue" / "Select a department to continue" / "Add at least one app to continue"). The hint is hidden once `canSave` is true.
 
 ---
 
@@ -235,6 +244,18 @@ Similar structure to templates list but shows recent onboarding events:
 
 > **Changed: List is live** — new onboardings completed in the flow are prepended to this list.
 > **Removed: "Template removed" warning** on rows where the source template was deleted (originally planned, later removed to keep the list clean).
+>
+> **Changed: Onboarding list is now the primary activity view.** The original simple table was replaced with:
+> - **4 stat cards** at the top (live-computed): Employees Onboarded, Apps Provisioned, Avg. Provision Time, Failed Provisions (turns amber when > 0)
+> - **Rich activity feed rows**: avatar, name + department chip, "Onboarded with template: [name]", app count, status badge (Completed / Partial), relative time, "by Alex M."
+> - **Detail drawer** (slide-in from right) on row click — shows full employee info (name, email, role, department chip, start date), provisioning summary (template, status, app count, duration), and per-app breakdown with status indicators
+>
+> **App breakdown statuses in the drawer**:
+> - ✅ `success` — provisioned
+> - ⚠️ `retried` — failed then retried successfully
+> - ⏭ `skipped` — user chose to skip during provisioning (dimmed label)
+> - ✂️ `removed` — app was in the template but removed by the admin during Step 2 review (dimmed, slightly transparent)
+> - ❌ `failed` — failed and not resolved
 
 **Primary CTA**: "+ New Onboarding" button
 
@@ -284,6 +305,8 @@ Each app displayed as a card/row:
 - Remove button (X) — to exclude an app from this specific onboarding
 - No granular permissions in MVP (just grant/revoke at app level)
 
+> **Added: Removed apps are tracked.** Apps removed via the X button during Step 2 are recorded and passed to Step 3. They appear in the detail drawer with a "Removed" label. Changing the template resets the removed apps list.
+
 **"+ Add App" button** — same search modal as the template editor, allows adding apps beyond the template for this specific onboarding
 
 **Summary bar** (sticky at bottom or as a visible section):
@@ -305,12 +328,14 @@ Then, the provisioning status screen:
 - A list of apps, each with a real-time status indicator:
   - ⏳ Provisioning... (loading spinner)
   - ✅ Provisioned (green check, with time: "0.8s")
-  - ❌ Failed (red X, with "Retry" button)
+  - ❌ Failed (red X, with "Retry" button and a "Skip" button)
 - Animate the statuses appearing sequentially (stagger them 0.5–1s apart to simulate real provisioning)
-- Once all complete, show a summary:
-  - "✅ 5/5 apps provisioned for Maria Santos"
-  - "Completed in 4.2 seconds"
-  - [View in Activity Log] [Onboard Another Employee]
+- Once all complete (all apps are either `success` or `skipped`), show a summary:
+  - "✅ N/total apps provisioned for Maria Santos" (N excludes skipped)
+  - "Completed in 4.2 seconds · 1 skipped" (notes retry and/or skipped count)
+  - [View in Onboarding] [Onboard Another Employee]
+
+> **Added: Skip option on failed apps.** When an app fails, the admin can either Retry or Skip. Skipping marks the app as `skipped` (dimmed row, muted label) and counts as a terminal state so the flow can complete. Skipped apps make the final status `"partial"` and turn the done banner amber. The skip count appears in the summary footnote.
 
 **Error state** (show for one app to demonstrate awareness):
 
@@ -321,7 +346,7 @@ For the demo, make one app fail on first attempt. Show:
 - On clicking Retry, animate it going to ⏳ then ✅
 - Final summary: "5/5 apps provisioned (1 retry)"
 
-> **Added: Completed onboarding is saved to the Onboarding List.** Uses a `savedRef` guard to ensure the save fires exactly once. Status is `"partial"` if any app required a retry, `"completed"` otherwise.
+> **Added: Completed onboarding is saved to the Onboarding List.** Uses a `savedRef` guard to ensure the save fires exactly once. Status is `"partial"` if any app required a retry or was skipped, `"completed"` otherwise. The saved entry includes `email`, `startDate`, and a full `appBreakdown` array (with per-app `status` and `time`) so the detail drawer can render it completely.
 
 ---
 
@@ -329,83 +354,13 @@ For the demo, make one app fail on first attempt. Show:
 
 **Route**: `/activity`
 
-### Summary Stats (top of page)
-4 stat cards in a row:
-- **Employees onboarded** — "12" (this month)
-- **Apps provisioned** — "47" (this month)
-- **Avg. time to provision** — "38 seconds"
-- **Failed provisions** — "2" (with subtle warning color)
+> **Removed entirely.** The Activity Dashboard was built and then consolidated into the Onboarding view. The sidebar entry, route, breadcrumb, and `ActivityDashboard.jsx` file have all been deleted. All activity content (stat cards, feed, detail drawer) now lives in the Onboarding screen (Screen 3a).
 
-### Activity Feed
-A chronological list (most recent first) of provisioning events.
+~~### Summary Stats~~
+~~### Activity Feed~~
+~~### Mock Activity Data~~
 
-Each entry:
-- **Employee avatar + name**
-- **Action**: "Onboarded with template: Product Designer"
-- **App count**: "5 apps provisioned"
-- **Status badge**: ✅ Completed / ⚠️ Partial / ❌ Failed
-- **Timestamp**: "2 minutes ago", "Yesterday at 3:45 PM", etc.
-- **Provisioned by**: "Alex M."
-
-Clicking an entry opens a **detail drawer** (slide-in from right):
-- Full employee info
-- Template used
-- Per-app breakdown: app icon + name + status + time taken
-- "Provisioned by Alex M. on Mar 22, 2026 at 10:15 AM"
-
-> **Status: Not yet built.** ActivityDashboard.jsx currently shows a placeholder. Mock data (`activityFeed`) is in `mockData.js` with full `appBreakdown` per entry.
-
-### Mock Activity Data
-```json
-[
-  {
-    "employee": "Maria Santos",
-    "template": "Product Designer",
-    "apps": 5,
-    "status": "completed",
-    "time": "2 minutes ago",
-    "provisionedBy": "Alex M.",
-    "duration": "4.2s"
-  },
-  {
-    "employee": "João Pereira",
-    "template": "Frontend Engineer",
-    "apps": 8,
-    "status": "completed",
-    "time": "Yesterday",
-    "provisionedBy": "Alex M.",
-    "duration": "6.8s"
-  },
-  {
-    "employee": "Ana Costa",
-    "template": "Account Executive",
-    "apps": 6,
-    "status": "partial",
-    "time": "Mar 19",
-    "provisionedBy": "Alex M.",
-    "duration": "5.1s",
-    "note": "1 app failed — Salesforce (retried successfully)"
-  },
-  {
-    "employee": "Carlos Mendes",
-    "template": "People Operations",
-    "apps": 5,
-    "status": "completed",
-    "time": "Mar 18",
-    "provisionedBy": "Alex M.",
-    "duration": "3.5s"
-  },
-  {
-    "employee": "Sofia Ribeiro",
-    "template": "Frontend Engineer",
-    "apps": 8,
-    "status": "completed",
-    "time": "Mar 15",
-    "provisionedBy": "Alex M.",
-    "duration": "7.2s"
-  }
-]
-```
+> **Note on mock data**: `activityFeed` remains in `mockData.js` as the seed data for the Onboarding list. Each entry was enriched with `email`, `role`, `department`, `startDate`, `dateProvisioned`, and `icon` per `appBreakdown` item so the detail drawer can render fully. `activityFeed` is now the single source of truth — `onboardingHistory` is no longer used separately. State is lifted to `App.jsx` as `activityFeed` / `setActivityFeed`.
 
 ---
 
@@ -419,6 +374,17 @@ Clicking an entry opens a **detail drawer** (slide-in from right):
 - **Button states**: Clear hover, active, and disabled states
 - **Loading states**: Subtle skeleton screens or spinners where appropriate
 
+> **Implemented: Polish pass** — all of the above were fully built out:
+>
+> - **View transitions**: 130ms skeleton loading state between navigations (shimmer gradient animation). The `.view-enter` class uses `fadeInUp 0.2s ease-out backwards` — `backwards` fill-mode is intentional and critical (see Technical Requirements).
+> - **Skeleton shimmer**: `bg-warm-100 → bg-warm-50 → bg-warm-100` gradient shimmer via `@keyframes shimmer`. Rendered by `<Skeleton />` in App.jsx during the 130ms loading window.
+> - **Provisioning animations**: success checkmark uses `popIn` with a spring curve (`cubic-bezier(0.34, 1.56, 0.64, 1)`); app row text uses `slideInRight`; done banner uses `fadeInScale`; action buttons use `fadeUp 0.3s 0.2s both` (delayed entry).
+> - **Detail drawer**: slides in from the right via `drawerIn` keyframe (`translateX(100%) → translateX(0)`).
+> - **App search modal**: scales in via `modalIn` keyframe (`scale(0.96) translateY(-4px) → identity`).
+> - **Focus states**: Global `button:focus-visible` / `a:focus-visible` coral outline ring (`2px solid coral-400, offset 2px`) defined once in `index.css`.
+> - **All keyframes centralized** in `index.css`. No inline `<style>` blocks remain in any component.
+> - **Rapid-click guard**: `navTimer` ref in App.jsx cancels any in-flight navigation transition before starting a new one, preventing stacked 130ms delays on fast clicks.
+
 ---
 
 ## Technical Requirements
@@ -427,11 +393,13 @@ Clicking an entry opens a **detail drawer** (slide-in from right):
 - **Styling**: Tailwind CSS v3 utility classes
 
 > **Note: Tailwind JIT limitation** — dynamically constructed class strings (e.g. `space-y-${n}`) are not generated at build time. Workaround: use inline `style={{}}` for dynamic spacing values and add a `safelist` regex in `tailwind.config.js` to pre-generate spacing utilities.
+>
+> **Note: CSS stacking context bug (fixed).** Using `animation-fill-mode: both` on a parent that applies `transform: translateY(...)` creates a new stacking context that traps `position: fixed` children (modals, drawers, toasts). The fix is to use `fill-mode: backwards` instead of `both` on `.view-enter` and the skeleton `fadeInUp` inline animation. With `backwards`, the transform is released as soon as the animation completes, so fixed descendants position correctly relative to the viewport.
 
 - **Routing**: Use React state to simulate routing (`useState` for `currentView` + `viewParams` in App.jsx)
 - **Data**: All data is hardcoded/mocked — no API calls
 
-> **State architecture**: `templates` and `onboardingHistory` are lifted to `App.jsx`, seeded from `mockData.js` constants. Mutation handlers (`saveTemplate`, `duplicateTemplate`, `deleteTemplate`, `addOnboarding`) are defined in App and passed down as props.
+> **State architecture**: `templates` and `activityFeed` are lifted to `App.jsx`, seeded from `mockData.js` constants. Mutation handlers (`saveTemplate`, `duplicateTemplate`, `deleteTemplate`, `addOnboarding`) are defined in App and passed down as props. `addOnboarding` writes to both the onboarding list and the `activityFeed` simultaneously.
 
 - **App icons**: Colored squares (not circles) with first letter of the app name, using a deterministic color map in `appColors` (mockData.js)
 - **Responsiveness**: Desktop-only is fine (1280px+ viewport). This is an enterprise admin tool.
@@ -454,9 +422,9 @@ Clicking an entry opens a **detail drawer** (slide-in from right):
   /views
     TemplatesList.jsx    — Grid + sort/group toolbar
     TemplateEditor.jsx   — Two-column editor with live preview
-    OnboardingList.jsx   — Table of past onboardings
+    OnboardingList.jsx   — Stat cards + activity feed + detail drawer
     OnboardingFlow.jsx   — 3-step flow (EmployeeStep, ReviewStep, ProvisioningStep)
-    ActivityDashboard.jsx — Placeholder (not yet built)
+    ~~ActivityDashboard.jsx~~ — Deleted; content merged into OnboardingList
 ```
 
 > **Note: Several components from the original spec were not created as separate files** (AppRow, StatusIndicator, StatCard, ActivityEntry, DetailDrawer) — their logic was inlined into the relevant view components.

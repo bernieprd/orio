@@ -1,12 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import Sidebar from './components/Sidebar.jsx'
 import TopBar from './components/TopBar.jsx'
 import TemplatesList from './views/TemplatesList.jsx'
 import TemplateEditor from './views/TemplateEditor.jsx'
 import OnboardingList from './views/OnboardingList.jsx'
 import OnboardingFlow from './views/OnboardingFlow.jsx'
-import ActivityDashboard from './views/ActivityDashboard.jsx'
-import { templates as initialTemplates, onboardingHistory as initialOnboarding } from './data/mockData.js'
+import { templates as initialTemplates, activityFeed as initialActivity } from './data/mockData.js'
 
 const SIDEBAR_ACTIVE = {
   templates:        'templates',
@@ -14,19 +13,50 @@ const SIDEBAR_ACTIVE = {
   'template-edit':  'templates',
   onboarding:       'onboarding',
   'onboarding-new': 'onboarding',
-  activity:         'activity',
+}
+
+// ── Skeleton ───────────────────────────────────────────────────────────────
+
+function Skeleton() {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col gap-2">
+          <div className="skeleton h-7 w-36" />
+          <div className="skeleton h-4 w-56" />
+        </div>
+        <div className="skeleton h-10 w-36" />
+      </div>
+      <div className="grid grid-cols-3 gap-4">
+        {[1, 2, 3, 4, 5, 6].map(i => (
+          <div key={i} className="skeleton h-44" />
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('templates')
-  const [viewParams, setViewParams]   = useState({})
-  const [templates, setTemplates]         = useState(initialTemplates)
-  const [onboardingHistory, setOnboarding] = useState(initialOnboarding)
+  const [currentView, setCurrentView]   = useState('templates')
+  const [viewParams, setViewParams]     = useState({})
+  const [loading, setLoading]           = useState(false)
+  const [viewKey, setViewKey]           = useState(0)
+  const [templates, setTemplates]       = useState(initialTemplates)
+  const [activityFeed, setActivityFeed] = useState(initialActivity)
+  const navTimer                        = useRef(null)
 
-  function navigate(view, params = {}) {
-    setCurrentView(view)
-    setViewParams(params)
-  }
+  const navigate = useCallback((view, params = {}) => {
+    // Cancel any in-flight transition
+    if (navTimer.current) clearTimeout(navTimer.current)
+
+    setLoading(true)
+    navTimer.current = setTimeout(() => {
+      setCurrentView(view)
+      setViewParams(params)
+      setViewKey(k => k + 1)
+      setLoading(false)
+    }, 130)
+  }, [])
 
   function saveTemplate(updatedTemplate) {
     setTemplates((prev) => {
@@ -51,16 +81,27 @@ export default function App() {
   }
 
   function deleteTemplate(id) {
-    const tpl = templates.find(t => t.id === id)
-    if (!tpl) return
     setTemplates(prev => prev.filter(t => t.id !== id))
-    setOnboarding(prev => prev.map(entry =>
-      entry.template === tpl.name ? { ...entry, templateDeleted: true } : entry
-    ))
   }
 
   function addOnboarding(entry) {
-    setOnboarding(prev => [entry, ...prev])
+    setActivityFeed(prev => [{
+      id:              `act-${Date.now()}`,
+      employee:        entry.employee,
+      initials:        entry.initials,
+      email:           entry.email,
+      role:            entry.role,
+      department:      entry.department,
+      startDate:       entry.startDate,
+      template:        entry.template,
+      apps:            entry.apps,
+      appBreakdown:    entry.appBreakdown,
+      status:          entry.status,
+      time:            'just now',
+      dateProvisioned: entry.dateProvisioned,
+      provisionedBy:   entry.provisionedBy,
+      duration:        entry.duration,
+    }, ...prev])
   }
 
   const sidebarActive = SIDEBAR_ACTIVE[currentView] ?? currentView
@@ -74,11 +115,9 @@ export default function App() {
       case 'template-edit':
         return <TemplateEditor navigate={navigate} templateId={viewParams.id} templates={templates} onSave={saveTemplate} />
       case 'onboarding':
-        return <OnboardingList navigate={navigate} onboardingHistory={onboardingHistory} />
+        return <OnboardingList navigate={navigate} activityFeed={activityFeed} toast={viewParams.toast} />
       case 'onboarding-new':
         return <OnboardingFlow navigate={navigate} templates={templates} onSaveOnboarding={addOnboarding} />
-      case 'activity':
-        return <ActivityDashboard navigate={navigate} />
       default:
         return <TemplatesList navigate={navigate} templates={templates} />
     }
@@ -94,7 +133,15 @@ export default function App() {
 
       <main className="ml-[220px] pt-14">
         <div className="max-w-[1100px] mx-auto px-8 py-8">
-          {renderView()}
+          {loading ? (
+            <div style={{ animation: 'fadeInUp 0.15s ease-out backwards' }}>
+              <Skeleton />
+            </div>
+          ) : (
+            <div key={viewKey} className="view-enter">
+              {renderView()}
+            </div>
+          )}
         </div>
       </main>
     </div>

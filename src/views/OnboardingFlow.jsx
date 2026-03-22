@@ -351,14 +351,19 @@ function EmployeeStep({ templates, onNext }) {
 function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack }) {
   const [currentTemplate, setCurrentTemplate]     = useState(initialTemplate)
   const [apps, setApps]                           = useState([...(initialTemplate?.apps ?? [])])
+  const [removedApps, setRemovedApps]             = useState([])
   const [showAppModal, setShowAppModal]           = useState(false)
   const [showTemplateModal, setShowTemplateModal] = useState(false)
 
   function toggleApp(app) {
     setApps(prev => prev.some(a => a.name === app.name) ? prev.filter(a => a.name !== app.name) : [...prev, app])
   }
-  function removeApp(name) { setApps(prev => prev.filter(a => a.name !== name)) }
-  function changeTemplate(tpl) { setCurrentTemplate(tpl); setApps([...tpl.apps]); setShowTemplateModal(false) }
+  function removeApp(name) {
+    const app = apps.find(a => a.name === name)
+    if (app) setRemovedApps(prev => [...prev, app])
+    setApps(prev => prev.filter(a => a.name !== name))
+  }
+  function changeTemplate(tpl) { setCurrentTemplate(tpl); setApps([...tpl.apps]); setRemovedApps([]); setShowTemplateModal(false) }
 
   const deptColors = departmentColors[employee.department] ?? { bg: 'bg-warm-100', text: 'text-warm-600' }
 
@@ -429,7 +434,7 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
             <span className="font-semibold text-warm-900">{apps.length} app{apps.length !== 1 ? 's' : ''}</span> will be provisioned for <span className="font-semibold text-warm-900">{employee.firstName}</span>
           </span>
           <button
-            onClick={() => onProvision(apps)}
+            onClick={() => onProvision(apps, removedApps)}
             disabled={apps.length === 0}
             className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 disabled:bg-warm-200 disabled:text-warm-400 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors duration-150 shadow-warm"
           >
@@ -460,7 +465,6 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
               )
             })}
           </div>
-          <style>{`@keyframes modalIn { from{opacity:0;transform:scale(0.96) translateY(-4px)} to{opacity:1;transform:scale(1) translateY(0)} }`}</style>
         </div>
       )}
     </div>
@@ -469,7 +473,7 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
 
 // ─── Step 3: Provisioning ─────────────────────────────────────────────────────
 
-function ProvisioningStep({ employee, apps, template, onSaveOnboarding, onViewActivity, onReset }) {
+function ProvisioningStep({ employee, apps, removedApps = [], template, onSaveOnboarding, onViewActivity, onReset }) {
   const [phase, setPhase]         = useState('confirm')
   const [statuses, setStatuses]   = useState(() => Object.fromEntries(apps.map(a => [a.name, 'idle'])))
   const [times, setTimes]         = useState({})
@@ -510,11 +514,16 @@ function ProvisioningStep({ employee, apps, template, onSaveOnboarding, onViewAc
     }, 1400))
   }
 
+  function handleSkip() {
+    setStatus(failApp.name, 'skipped')
+  }
+
   const savedRef = useRef(false)
 
   useEffect(() => {
     if (phase !== 'running') return
-    if (apps.every(a => statuses[a.name] === 'success')) {
+    const done = apps.every(a => ['success', 'skipped'].includes(statuses[a.name]))
+    if (done) {
       const el = ((Date.now() - startedAt) / 1000).toFixed(1)
       setElapsed(el)
       setTimeout(() => {
@@ -527,11 +536,31 @@ function ProvisioningStep({ employee, apps, template, onSaveOnboarding, onViewAc
             id:              `ob-${Date.now()}`,
             employee:        fullName(employee),
             initials:        initials(employee),
+            email:           employee.email,
             role:            employee.role,
             department:      employee.department,
+            startDate:       employee.startDate,
             template:        template?.name ?? '',
             apps:            apps.length,
-            status:          retried ? 'partial' : 'completed',
+            appBreakdown:    [
+              ...apps.map(a => ({
+                name:   a.name,
+                icon:   a.icon,
+                status: statuses[a.name] === 'skipped'
+                  ? 'skipped'
+                  : (a.name === failApp.name && retried)
+                  ? 'retried'
+                  : 'success',
+                time:   times[a.name] ?? null,
+              })),
+              ...removedApps.map(a => ({
+                name:   a.name,
+                icon:   a.icon,
+                status: 'removed',
+                time:   null,
+              })),
+            ],
+            status:          (retried || apps.some(a => statuses[a.name] === 'skipped')) ? 'partial' : 'completed',
             dateProvisioned: dateStr,
             provisionedBy:   'Alex M.',
             duration:        el + 's',
@@ -563,7 +592,6 @@ function ProvisioningStep({ employee, apps, template, onSaveOnboarding, onViewAc
             </button>
           </div>
         </div>
-        <style>{`@keyframes modalIn{from{opacity:0;transform:scale(0.95) translateY(-6px)}to{opacity:1;transform:scale(1) translateY(0)}}`}</style>
       </div>
     )
   }
@@ -581,35 +609,60 @@ function ProvisioningStep({ employee, apps, template, onSaveOnboarding, onViewAc
         {apps.map((app, i) => {
           const st = statuses[app.name]
           return (
-            <div key={app.name} className={`flex items-center gap-3 px-4 py-3.5 transition-colors duration-300
-              ${st === 'success' ? 'bg-emerald-50/40' : ''}
-              ${st === 'failed'  ? 'bg-red-50/40' : ''}
+            <div key={app.name} className={`flex items-center gap-3 px-4 py-3.5 transition-all duration-500
+              ${st === 'success'  ? 'bg-emerald-50/50' : ''}
+              ${st === 'failed'   ? 'bg-red-50/40' : ''}
+              ${st === 'skipped'  ? 'bg-warm-50/60' : ''}
               ${i < apps.length - 1 ? 'border-b border-warm-100' : ''}
             `}>
-              <AppIcon app={app} size={32} />
+              <div className={`transition-all duration-300 ${st === 'skipped' ? 'opacity-40' : 'opacity-100'}`}>
+                <AppIcon app={app} size={32} />
+              </div>
               <div className="flex-1 min-w-0">
-                <span className="text-sm font-semibold text-warm-900">{app.name}</span>
-                {st === 'failed' && <p className="text-xs text-red-500 mt-0.5">Connection timed out</p>}
+                <span className={`text-sm font-semibold transition-colors duration-300 ${st === 'skipped' ? 'text-warm-400' : 'text-warm-900'}`}>
+                  {app.name}
+                </span>
+                {st === 'failed' && (
+                  <p className="text-xs text-red-500 mt-0.5" style={{ animation: 'fadeInUp 0.2s ease-out' }}>
+                    Connection timed out
+                  </p>
+                )}
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 {st === 'idle' && <span className="text-xs text-warm-300 font-medium">Pending</span>}
                 {(st === 'provisioning' || st === 'retrying') && (
-                  <span className="flex items-center gap-1.5 text-xs text-warm-500 font-medium">
+                  <span className="flex items-center gap-1.5 text-xs text-warm-500 font-medium" style={{ animation: 'fadeInUp 0.15s ease-out' }}>
                     <Loader2 size={14} className="animate-spin text-coral-400" />
                     {st === 'retrying' ? 'Retrying...' : 'Provisioning...'}
                   </span>
                 )}
                 {st === 'success' && (
                   <span className="flex items-center gap-1.5 text-xs text-emerald-600 font-semibold">
-                    <CheckCircle2 size={15} className="text-emerald-500" />
-                    Provisioned
-                    {times[app.name] && <span className="text-warm-400 font-normal">{times[app.name]}</span>}
+                    <CheckCircle2
+                      size={16}
+                      className="text-emerald-500 flex-shrink-0"
+                      style={{ animation: 'popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}
+                    />
+                    <span style={{ animation: 'slideInRight 0.2s 0.1s ease-out both' }}>
+                      Provisioned
+                      {times[app.name] && <span className="text-warm-400 font-normal ml-1">{times[app.name]}</span>}
+                    </span>
+                  </span>
+                )}
+                {st === 'skipped' && (
+                  <span className="text-xs text-warm-400 font-medium" style={{ animation: 'fadeInUp 0.2s ease-out' }}>
+                    Skipped
                   </span>
                 )}
                 {st === 'failed' && (
-                  <button onClick={handleRetry} className="flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 px-2.5 py-1 rounded-lg transition-colors duration-150">
-                    <RefreshCw size={12} /> Retry
-                  </button>
+                  <div className="flex items-center gap-1.5" style={{ animation: 'fadeInUp 0.2s ease-out' }}>
+                    <button onClick={handleRetry} className="flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 px-2.5 py-1 rounded-lg transition-colors duration-150">
+                      <RefreshCw size={12} /> Retry
+                    </button>
+                    <button onClick={handleSkip} className="flex items-center gap-1.5 text-xs font-semibold text-warm-500 hover:text-warm-700 bg-warm-100 hover:bg-warm-200 border border-warm-200 px-2.5 py-1 rounded-lg transition-colors duration-150">
+                      Skip
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -617,32 +670,43 @@ function ProvisioningStep({ employee, apps, template, onSaveOnboarding, onViewAc
         })}
       </div>
 
-      {phase === 'done' && (
+      {phase === 'done' && (() => {
+        const skippedCount  = apps.filter(a => statuses[a.name] === 'skipped').length
+        const successCount  = apps.length - skippedCount
+        const hasIssues     = retried || skippedCount > 0
+        const summaryNotes  = [retried && '1 retry', skippedCount > 0 && `${skippedCount} skipped`].filter(Boolean).join(' · ')
+        return (
         <>
-          <div className="bg-emerald-50 border border-emerald-100 rounded-lg px-5 py-4 mb-6" style={{ animation: 'fadeUp 0.4s ease-out' }}>
+          <div
+            className={`border rounded-lg px-5 py-4 mb-6 ${hasIssues ? 'bg-amber-50 border-amber-100' : 'bg-emerald-50 border-emerald-100'}`}
+            style={{ animation: 'fadeInScale 0.35s cubic-bezier(0.34, 1.2, 0.64, 1) both' }}
+          >
             <div className="flex items-center gap-2 mb-1">
-              <CheckCircle2 size={18} className="text-emerald-500" />
-              <span className="font-bold text-emerald-800 text-sm">
-                {apps.length}/{apps.length} apps provisioned for {fullName(employee)}
+              <CheckCircle2
+                size={18}
+                className={hasIssues ? 'text-amber-500' : 'text-emerald-500'}
+                style={{ animation: 'popIn 0.4s 0.1s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}
+              />
+              <span className={`font-bold text-sm ${hasIssues ? 'text-amber-800' : 'text-emerald-800'}`}>
+                {successCount}/{apps.length} apps provisioned for {fullName(employee)}
               </span>
             </div>
-            <p className="text-xs text-emerald-600 ml-6">Completed in {elapsed}s{retried ? ' · 1 retry' : ''}</p>
+            <p className={`text-xs ml-6 ${hasIssues ? 'text-amber-600' : 'text-emerald-600'}`}>
+              Completed in {elapsed}s{summaryNotes ? ` · ${summaryNotes}` : ''}
+            </p>
           </div>
-          <div className="flex items-center gap-3" style={{ animation: 'fadeUp 0.5s ease-out' }}>
+          <div className="flex items-center gap-3" style={{ animation: 'fadeUp 0.3s 0.2s ease-out both' }}>
             <button onClick={onViewActivity} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 text-white text-sm font-semibold transition-colors duration-150 shadow-warm">
-              View in Activity Log
+              View in Onboarding
             </button>
             <button onClick={onReset} className="px-4 py-2.5 rounded-lg text-sm font-medium text-warm-700 hover:bg-warm-100 border border-warm-200 transition-colors duration-150">
               Onboard Another Employee
             </button>
           </div>
         </>
-      )}
+        )
+      })()}
 
-      <style>{`
-        @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes modalIn { from{opacity:0;transform:scale(0.95) translateY(-6px)} to{opacity:1;transform:scale(1) translateY(0)} }
-      `}</style>
     </div>
   )
 }
@@ -675,10 +739,11 @@ function SummaryField({ label, value, chip, deptColors }) {
 // ─── Main shell ───────────────────────────────────────────────────────────────
 
 export default function OnboardingFlow({ navigate, templates, onSaveOnboarding }) {
-  const [step, setStep]         = useState(1)
-  const [employee, setEmployee] = useState(null)
-  const [template, setTemplate] = useState(null)
-  const [apps, setApps]         = useState([])
+  const [step, setStep]             = useState(1)
+  const [employee, setEmployee]     = useState(null)
+  const [template, setTemplate]     = useState(null)
+  const [apps, setApps]             = useState([])
+  const [removedApps, setRemovedApps] = useState([])
 
   const readyTemplates = templates.filter(t => !t.needsAttention)
 
@@ -686,7 +751,7 @@ export default function OnboardingFlow({ navigate, templates, onSaveOnboarding }
     setEmployee(emp); setTemplate(tpl); setApps(tpl?.apps ?? []); setStep(2)
   }
 
-  function resetFlow() { setStep(1); setEmployee(null); setTemplate(null); setApps([]) }
+  function resetFlow() { setStep(1); setEmployee(null); setTemplate(null); setApps([]); setRemovedApps([]) }
 
   return (
     <div>
@@ -698,10 +763,24 @@ export default function OnboardingFlow({ navigate, templates, onSaveOnboarding }
 
       {step === 1 && <EmployeeStep templates={readyTemplates} onNext={handleStep1} />}
       {step === 2 && employee && (
-        <ReviewStep employee={employee} initialTemplate={template} templates={readyTemplates} onProvision={apps => { setApps(apps); setStep(3) }} onBack={() => setStep(1)} />
+        <ReviewStep
+          employee={employee}
+          initialTemplate={template}
+          templates={readyTemplates}
+          onProvision={(provisioned, removed) => { setApps(provisioned); setRemovedApps(removed); setStep(3) }}
+          onBack={() => setStep(1)}
+        />
       )}
       {step === 3 && employee && (
-        <ProvisioningStep employee={employee} apps={apps} template={template} onSaveOnboarding={onSaveOnboarding} onViewActivity={() => navigate('activity')} onReset={resetFlow} />
+        <ProvisioningStep
+          employee={employee}
+          apps={apps}
+          removedApps={removedApps}
+          template={template}
+          onSaveOnboarding={onSaveOnboarding}
+          onViewActivity={() => navigate('onboarding', { toast: 'Access provisioned successfully' })}
+          onReset={resetFlow}
+        />
       )}
     </div>
   )

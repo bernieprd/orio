@@ -12,6 +12,15 @@
     font-size: 14px;
   }
 
+  /* Global focus ring for keyboard nav */
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid theme('colors.coral.400');
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
   /* Smooth scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
@@ -32,4 +41,82 @@
   .transition-default {
     @apply transition-all duration-200 ease-in-out;
   }
+}
+
+/* ── View transitions ──────────────────────────────────────────────────── */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.view-enter {
+  animation: fadeInUp 0.2s ease-out backwards;
+}
+
+/* ── Skeleton shimmer ──────────────────────────────────────────────────── */
+
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    theme('colors.warm.100') 25%,
+    theme('colors.warm.50')  50%,
+    theme('colors.warm.100') 75%
+  );
+  background-size: 600px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ── Provisioning animations ───────────────────────────────────────────── */
+
+/* Checkmark pop-in on success */
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(0.4); }
+  65%  { transform: scale(1.2); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Text slide-in alongside checkmark */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Final done banner */
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.97) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Existing modal + drawer animations (centralised here) */
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes drawerIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
