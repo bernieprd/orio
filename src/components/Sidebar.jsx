@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 
 const NAV_MAIN = [
-  { icon: LayoutDashboard, label: 'Overview', view: 'overview' },
+  { icon: LayoutDashboard, label: 'Dashboard' },
   { icon: Users,           label: 'Employees' },
   { icon: AppWindow,       label: 'Applications' },
   { icon: CreditCard,      label: 'Billing' },
@@ -31,7 +31,10 @@ function SidebarContent({ currentView, onNavigate, showClose, onClose }) {
   return (
     <>
       <div className="px-5 py-5 border-b border-warm-100 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
+        <div
+          onClick={() => onNavigate('overview')}
+          className="flex items-center gap-2.5 cursor-pointer opacity-100 hover:opacity-75 transition-opacity duration-150"
+        >
           <div className="w-8 h-8 rounded-lg bg-coral-400 flex items-center justify-center">
             <Zap size={16} className="text-white" strokeWidth={2.5} />
           </div>
@@ -144,7 +147,7 @@ export default function Sidebar({ currentView, onNavigate, isOpen, onClose }) {
       {/* Tablet icon rail (md → lg) */}
       <aside className="hidden md:flex lg:hidden fixed left-0 top-0 bottom-0 w-[60px] bg-white border-r border-warm-200 flex-col z-20">
         <div
-          className="flex items-center justify-center py-5 border-b border-warm-100 cursor-pointer"
+          className="flex items-center justify-center py-5 border-b border-warm-100 cursor-pointer opacity-100 hover:opacity-75 transition-opacity duration-150"
           onClick={() => onNavigate('overview')}
         >
           <div className="w-8 h-8 rounded-lg bg-coral-400 flex items-center justify-center">

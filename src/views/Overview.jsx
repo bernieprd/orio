@@ -114,6 +114,15 @@ export default function Overview({ navigate }) {
             Start Onboarding
             <ArrowRight size={15} strokeWidth={2.5} />
           </button>
+          <a
+            href="https://www.notion.so/bernardoprd/Challenge-Deliverable-Access-Automation-for-Orio-32b332846c00818f93ddc55e6f7d4605"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 text-warm-500 text-sm font-medium rounded-lg border border-warm-200 hover:text-warm-800 hover:border-warm-300 hover:bg-warm-50 transition-all duration-150 min-h-[44px]"
+          >
+            Read the case study
+            <ExternalLink size={14} strokeWidth={2} />
+          </a>
         </div>
 
         {/* Stat */}
@@ -336,18 +345,9 @@ export default function Overview({ navigate }) {
       <div className="border-t border-warm-100" />
 
       {/* ── Footer ───────────────────────────────────────────────────── */}
-      <footer className="py-10 text-center flex flex-col items-center gap-3">
-        <a
-          href="https://www.notion.so/32b332846c00818f93ddc55e6f7d4605"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-warm-500 hover:text-coral-500 transition-colors duration-150 border border-warm-200 rounded-lg px-4 py-2 hover:border-coral-200 hover:bg-coral-50"
-        >
-          Full case study & documentation
-          <ExternalLink size={13} strokeWidth={2} />
-        </a>
+      <footer className="py-10 text-center">
         <p className="text-xs text-warm-400">
-          Built by Bernardo Prudêncio for the Orio Product Designer Challenge
+          Built by Bernardo Prudêncio for the Factorial Product Designer Challenge
         </p>
       </footer>
 

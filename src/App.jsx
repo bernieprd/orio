@@ -10,7 +10,7 @@ import DeptDefaults from './views/DeptDefaults.jsx'
 import { templates as initialTemplates, activityFeed as initialActivity, departmentDefaults as initialDeptDefaults } from './data/mockData.js'
 
 const SIDEBAR_ACTIVE = {
-  overview:         'overview',
+  overview:         null,
   templates:        'templates',
   'template-new':   'templates',
   'template-edit':  'templates',
