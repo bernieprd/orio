@@ -97,48 +97,36 @@ export default function Overview({ navigate }) {
 
         {/* CTAs */}
         <div
-          className="reveal flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 mb-12"
+          className="reveal flex flex-col items-stretch sm:items-center justify-center gap-3 mb-12"
           style={{ transitionDelay: '240ms' }}
         >
-          <button
-            onClick={() => navigate('templates')}
-            className="flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 bg-coral-400 text-white text-sm font-semibold rounded-lg hover:bg-coral-500 transition-colors duration-150 shadow-warm-md min-h-[44px]"
-          >
-            Explore Templates
-            <ArrowRight size={15} strokeWidth={2.5} />
-          </button>
-          <button
-            onClick={() => navigate('onboarding')}
-            className="flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 bg-white text-warm-700 text-sm font-semibold rounded-lg border border-warm-200 hover:bg-warm-50 hover:border-warm-300 transition-all duration-150 shadow-warm min-h-[44px]"
-          >
-            Start Onboarding
-            <ArrowRight size={15} strokeWidth={2.5} />
-          </button>
           <a
             href="https://www.notion.so/bernardoprd/Challenge-Deliverable-Access-Automation-for-Orio-32b332846c00818f93ddc55e6f7d4605"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 text-warm-500 text-sm font-medium rounded-lg border border-warm-200 hover:text-warm-800 hover:border-warm-300 hover:bg-warm-50 transition-all duration-150 min-h-[44px]"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-coral-400 text-white text-sm font-semibold rounded-lg hover:bg-coral-500 transition-colors duration-150 shadow-warm-md min-h-[44px]"
           >
             Read the case study
-            <ExternalLink size={14} strokeWidth={2} />
+            <ExternalLink size={15} strokeWidth={2.5} />
           </a>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+            <button
+              onClick={() => navigate('templates')}
+              className="flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 bg-white text-warm-700 text-sm font-semibold rounded-lg border border-warm-200 hover:bg-warm-50 hover:border-warm-300 transition-all duration-150 shadow-warm min-h-[44px]"
+            >
+              Explore Templates
+              <ArrowRight size={15} strokeWidth={2.5} />
+            </button>
+            <button
+              onClick={() => navigate('onboarding')}
+              className="flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 bg-white text-warm-700 text-sm font-semibold rounded-lg border border-warm-200 hover:bg-warm-50 hover:border-warm-300 transition-all duration-150 shadow-warm min-h-[44px]"
+            >
+              Start Onboarding
+              <ArrowRight size={15} strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
 
-        {/* Stat */}
-        <div
-          className="reveal inline-flex items-center gap-4 bg-white border border-warm-200 rounded-xl px-6 py-4 shadow-warm"
-          style={{ transitionDelay: '320ms' }}
-        >
-          <span className="text-sm text-warm-400 line-through">Manual: ~2 hours</span>
-          <span className="text-warm-300">→</span>
-          <span className="text-sm font-bold text-coral-500">
-            With Orio: <span className="text-warm-900">38 seconds</span>
-          </span>
-          <span className="text-xs font-semibold bg-coral-50 text-coral-500 px-2 py-1 rounded-full border border-coral-100">
-            From hours to seconds
-          </span>
-        </div>
       </section>
 
       <div className="border-t border-warm-100" />
@@ -189,7 +177,7 @@ export default function Overview({ navigate }) {
           How Orio Automation works
         </h2>
 
-        <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-0 max-w-2xl mx-auto">
+        <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 md:gap-2 max-w-2xl mx-auto">
           {[
             {
               icon:  LayoutTemplate,
@@ -215,7 +203,7 @@ export default function Overview({ navigate }) {
           ].map(({ icon: Icon, step, title, desc, delay }, i, arr) => (
             <div key={step} className="flex items-start">
               <div
-                className="reveal flex flex-col items-center text-center gap-3 px-6"
+                className="reveal flex flex-col items-center text-center gap-3 px-8"
                 style={{ transitionDelay: `${delay}ms` }}
               >
                 <div className="relative">
