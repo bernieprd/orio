@@ -167,13 +167,13 @@ function Stepper({ currentStep }) {
               >
                 {done ? <Check size={12} strokeWidth={3} /> : num}
               </div>
-              <span className={`text-sm font-semibold whitespace-nowrap transition-colors duration-200
+              <span className={`hidden sm:block text-sm font-semibold whitespace-nowrap transition-colors duration-200
                 ${done ? 'text-coral-400' : active ? 'text-warm-900' : 'text-warm-400'}`}>
                 {label}
               </span>
             </div>
             {i < STEPS.length - 1 && (
-              <div className={`flex-1 h-px mx-4 transition-colors duration-500 ${done ? 'bg-coral-200' : 'bg-warm-200'}`} />
+              <div className={`flex-1 h-px mx-2 sm:mx-4 transition-colors duration-500 ${done ? 'bg-coral-200' : 'bg-warm-200'}`} />
             )}
           </div>
         )
@@ -364,7 +364,7 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
         <div className="w-10 h-10 rounded-full bg-coral-100 flex items-center justify-center text-sm font-bold text-coral-500 flex-shrink-0">
           {initials(employee)}
         </div>
-        <div className="flex-1 grid grid-cols-2 gap-x-6 gap-y-2">
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
           <SummaryField label="Name"       value={fullName(employee)} />
           <SummaryField label="Email"      value={employee.email} />
           <SummaryField label="Department" value={employee.department} chip deptColors={deptColors} />
@@ -413,13 +413,13 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
         )}
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center justify-between">
-        <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-warm-500 hover:text-warm-800 transition-colors">
+      {/* Actions — sticky on mobile */}
+      <div className="sticky sm:static bottom-0 left-0 right-0 bg-white sm:bg-transparent border-t sm:border-0 border-warm-200 p-4 sm:p-0 -mx-4 sm:mx-0 sm:flex sm:items-center sm:justify-between">
+        <button onClick={onBack} className="hidden sm:flex items-center gap-1.5 text-sm text-warm-500 hover:text-warm-800 transition-colors">
           <ArrowLeft size={14} /> Back
         </button>
-        <div className="flex items-center gap-4">
-          <div className="text-right">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+          <div className="sm:text-right">
             <span className="text-sm text-warm-500">
               <span className="font-semibold text-warm-900">{apps.length} app{apps.length !== 1 ? 's' : ''}</span> will be provisioned for <span className="font-semibold text-warm-900">{employee.firstName}</span>
             </span>
@@ -428,7 +428,7 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
           <button
             onClick={() => onProvision(apps, removedApps)}
             disabled={apps.length === 0}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 disabled:bg-warm-200 disabled:text-warm-400 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors duration-150 shadow-warm"
+            className="flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 disabled:bg-warm-200 disabled:text-warm-400 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors duration-150 shadow-warm min-h-[44px]"
           >
             Provision Access <ArrowRight size={15} strokeWidth={2.5} />
           </button>
@@ -566,8 +566,8 @@ function ProvisioningStep({ employee, apps, removedApps = [], template, onSaveOn
 
   if (phase === 'confirm') {
     return (
-      <div className="fixed inset-0 z-40 bg-black/20 flex items-center justify-center">
-        <div className="bg-white rounded-xl shadow-warm-lg border border-warm-200 w-[420px] p-6" style={{ animation: 'modalIn 0.2s ease-out' }}>
+      <div className="fixed inset-0 z-40 bg-black/20 flex items-end sm:items-center justify-center">
+        <div className="bg-white w-full sm:w-[420px] rounded-t-xl sm:rounded-xl shadow-warm-lg border border-warm-200 p-6" style={{ animation: 'modalIn 0.2s ease-out' }}>
           <div className="w-10 h-10 rounded-full bg-coral-50 flex items-center justify-center mb-4">
             <AlertCircle size={20} className="text-coral-400" />
           </div>

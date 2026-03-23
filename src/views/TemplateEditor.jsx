@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { ArrowLeft, Plus, X, Layers, LayoutTemplate, Info } from 'lucide-react'
+import { ArrowLeft, Plus, X, Layers, LayoutTemplate, Info, ChevronDown } from 'lucide-react'
 import AppSearchModal from '../components/AppSearchModal.jsx'
 import Toast from '../components/Toast.jsx'
 import { departmentColors, appsCatalog } from '../data/mockData.js'
@@ -20,7 +20,7 @@ function LivePreview({ form }) {
   const [descExpanded, setDescExpanded] = useState(false)
 
   return (
-    <div className="sticky top-8">
+    <div className="lg:sticky lg:top-8">
       <div className="bg-white rounded-lg border border-warm-200 shadow-warm overflow-hidden">
 
         {/* Header */}
@@ -127,6 +127,7 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
 
   const [showModal, setShowModal] = useState(false)
   const [defaultsBanner, setDefaultsBanner] = useState(null) // dept name or null
+  const [showPreview, setShowPreview] = useState(false)
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }))
@@ -205,10 +206,10 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
       </div>
 
       {/* Two-column layout */}
-      <div className="flex gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
 
         {/* ── Left column (60%) ─────────────────────────────────── */}
-        <div className="flex-[3] min-w-0">
+        <div className="flex-[3] min-w-0 w-full">
           <div className="bg-white rounded-lg border border-warm-200 p-5">
 
             {/* Template Name */}
@@ -405,8 +406,18 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
         </div>
 
         {/* ── Right column (40%) ────────────────────────────────── */}
-        <div className="flex-[2] min-w-0">
-          <LivePreview form={form} />
+        <div className="flex-[2] min-w-0 w-full">
+          {/* Toggle button — only visible below lg */}
+          <button
+            onClick={() => setShowPreview(v => !v)}
+            className="lg:hidden w-full flex items-center justify-between px-4 py-3 bg-white border border-warm-200 rounded-lg text-sm font-semibold text-warm-700 hover:bg-warm-50 transition-colors mb-2"
+          >
+            Live Preview
+            <ChevronDown size={15} className={`text-warm-400 transition-transform duration-150 ${showPreview ? 'rotate-180' : ''}`} />
+          </button>
+          <div className={`lg:block ${showPreview ? 'block' : 'hidden'}`}>
+            <LivePreview form={form} />
+          </div>
         </div>
       </div>
 

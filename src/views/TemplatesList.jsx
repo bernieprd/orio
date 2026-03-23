@@ -99,7 +99,7 @@ function DeptSection({ dept, templates, onEdit, onDuplicate, onDelete }) {
         </span>
         <span className="text-xs text-warm-400">{templates.length} template{templates.length !== 1 ? 's' : ''}</span>
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {templates.map(tpl => (
           <TemplateCard
             key={tpl.id}
@@ -132,7 +132,7 @@ export default function TemplatesList({ navigate, templates, toast: initialToast
   return (
     <div>
       {/* Page header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-start gap-4 justify-between mb-6">
         <div>
           <h1 className="text-xl font-extrabold text-warm-900">Templates</h1>
           <p className="text-sm text-warm-400 mt-0.5">
@@ -192,7 +192,7 @@ export default function TemplatesList({ navigate, templates, toast: initialToast
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {sorted.map(tpl => (
                 <TemplateCard
                   key={tpl.id}

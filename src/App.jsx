@@ -48,12 +48,12 @@ export default function App() {
   const [templates, setTemplates]       = useState(initialTemplates)
   const [activityFeed, setActivityFeed] = useState(initialActivity)
   const [deptDefaults, setDeptDefaults] = useState(initialDeptDefaults)
+  const [sidebarOpen, setSidebarOpen]   = useState(false)
   const navTimer                        = useRef(null)
 
   const navigate = useCallback((view, params = {}) => {
-    // Cancel any in-flight transition
     if (navTimer.current) clearTimeout(navTimer.current)
-
+    setSidebarOpen(false)
     setLoading(true)
     navTimer.current = setTimeout(() => {
       setCurrentView(view)
@@ -137,11 +137,17 @@ export default function App() {
       <Sidebar
         currentView={sidebarActive}
         onNavigate={(view) => navigate(view)}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
-      <TopBar currentView={currentView} viewParams={viewParams} />
+      <TopBar
+        currentView={currentView}
+        viewParams={viewParams}
+        onHamburger={() => setSidebarOpen(o => !o)}
+      />
 
-      <main className="ml-[220px] pt-14">
-        <div className="max-w-[1100px] mx-auto px-8 py-8">
+      <main className="ml-0 md:ml-[60px] lg:ml-[220px] pt-14">
+        <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
           {loading ? (
             <div style={{ animation: 'fadeInUp 0.15s ease-out backwards' }}>
               <Skeleton />

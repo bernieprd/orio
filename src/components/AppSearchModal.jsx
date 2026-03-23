@@ -31,12 +31,12 @@ export default function AppSearchModal({ addedApps, onToggle, onClose }) {
   return (
     /* Backdrop */
     <div
-      className="fixed inset-0 z-40 bg-black/20 flex items-center justify-center"
+      className="fixed inset-0 z-40 bg-black/20 flex items-end sm:items-center justify-center"
       onClick={onClose}
     >
       {/* Modal */}
       <div
-        className="bg-white rounded-xl shadow-warm-lg border border-warm-200 w-[420px] max-h-[520px] flex flex-col animate-modal"
+        className="bg-white w-full sm:w-[420px] sm:rounded-xl rounded-t-xl shadow-warm-lg border border-warm-200 flex flex-col max-h-[85vh] sm:max-h-[520px]"
         onClick={(e) => e.stopPropagation()}
         style={{ animation: 'modalIn 0.18s ease-out' }}
       >

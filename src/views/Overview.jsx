@@ -81,7 +81,7 @@ export default function Overview({ navigate }) {
         </div>
 
         <h1
-          className="reveal text-4xl font-extrabold text-warm-900 tracking-tight leading-tight mb-4"
+          className="reveal text-2xl sm:text-3xl lg:text-4xl font-extrabold text-warm-900 tracking-tight leading-tight mb-4"
           style={{ transitionDelay: '80ms' }}
         >
           Access automation for growing teams
@@ -97,19 +97,19 @@ export default function Overview({ navigate }) {
 
         {/* CTAs */}
         <div
-          className="reveal flex items-center justify-center gap-3 mb-12"
+          className="reveal flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 mb-12"
           style={{ transitionDelay: '240ms' }}
         >
           <button
             onClick={() => navigate('templates')}
-            className="flex items-center gap-2 px-5 py-2.5 bg-coral-400 text-white text-sm font-semibold rounded-lg hover:bg-coral-500 transition-colors duration-150 shadow-warm-md"
+            className="flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 bg-coral-400 text-white text-sm font-semibold rounded-lg hover:bg-coral-500 transition-colors duration-150 shadow-warm-md min-h-[44px]"
           >
             Explore Templates
             <ArrowRight size={15} strokeWidth={2.5} />
           </button>
           <button
             onClick={() => navigate('onboarding')}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white text-warm-700 text-sm font-semibold rounded-lg border border-warm-200 hover:bg-warm-50 hover:border-warm-300 transition-all duration-150 shadow-warm"
+            className="flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 bg-white text-warm-700 text-sm font-semibold rounded-lg border border-warm-200 hover:bg-warm-50 hover:border-warm-300 transition-all duration-150 shadow-warm min-h-[44px]"
           >
             Start Onboarding
             <ArrowRight size={15} strokeWidth={2.5} />
@@ -145,7 +145,7 @@ export default function Overview({ navigate }) {
           Every new hire means hours of manual provisioning. IT teams juggle spreadsheets, tickets, and tribal knowledge to figure out which apps each role needs — then provision them one by one.
         </p>
 
-        <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
           {[
             { icon: ClipboardList, label: 'Manual provisioning',     desc: 'Apps set up one by one, every time' },
             { icon: GitMerge,      label: 'No role-to-app mapping',  desc: 'No source of truth for what each role needs' },
@@ -180,7 +180,7 @@ export default function Overview({ navigate }) {
           How Orio Automation works
         </h2>
 
-        <div className="flex items-start justify-center gap-0 max-w-2xl mx-auto">
+        <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-0 max-w-2xl mx-auto">
           {[
             {
               icon:  LayoutTemplate,
@@ -223,7 +223,7 @@ export default function Overview({ navigate }) {
                 </div>
               </div>
               {i < arr.length - 1 && (
-                <div className="flex items-center pt-6 text-warm-300">
+                <div className="hidden md:flex items-center pt-6 text-warm-300">
                   <ChevronRight size={18} strokeWidth={1.5} />
                 </div>
               )}
@@ -258,7 +258,7 @@ export default function Overview({ navigate }) {
           Built to grow
         </h2>
 
-        <div className="flex gap-4 max-w-2xl mx-auto">
+        <div className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto">
           {[
             {
               version: 'v1',
@@ -311,7 +311,7 @@ export default function Overview({ navigate }) {
       <Section className="text-center">
         <SectionLabel>Design principles</SectionLabel>
 
-        <div className="flex gap-4 max-w-3xl mx-auto mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-3xl mx-auto mt-6">
           {[
             { icon: BookOpen,    title: 'Rules, not scripts',       desc: 'Configure behavior through templates, not custom code.',   delay: 0   },
             { icon: Zap,         title: 'Progressive automation',   desc: 'Start simple. Add complexity only when you\'re ready.',   delay: 80  },
@@ -320,7 +320,7 @@ export default function Overview({ navigate }) {
           ].map(({ icon: Icon, title, desc, delay }) => (
             <div
               key={title}
-              className="reveal flex-1 flex flex-col items-center text-center gap-2"
+              className="reveal flex flex-col items-center text-center gap-2"
               style={{ transitionDelay: `${delay}ms` }}
             >
               <div className="w-9 h-9 rounded-lg bg-warm-100 flex items-center justify-center mb-1">
