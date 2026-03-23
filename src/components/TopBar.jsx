@@ -2,6 +2,7 @@ import { Bell, ChevronRight } from 'lucide-react'
 
 function getBreadcrumbs(currentView, viewParams) {
   switch (currentView) {
+    case 'overview':       return ['Overview']
     case 'templates':      return ['Automation', 'Templates']
     case 'template-new':   return ['Automation', 'Templates', 'New Template']
     case 'template-edit':  return ['Automation', 'Templates', viewParams?.name ?? 'Edit']

@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 
 const NAV_MAIN = [
-  { icon: LayoutDashboard, label: 'Dashboard' },
+  { icon: LayoutDashboard, label: 'Overview', view: 'overview' },
   { icon: Users,           label: 'Employees' },
   { icon: AppWindow,       label: 'Applications' },
   { icon: CreditCard,      label: 'Billing' },
@@ -43,15 +43,43 @@ export default function Sidebar({ currentView, onNavigate }) {
 
       {/* Main nav */}
       <nav className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-0.5">
-        {NAV_MAIN.map(({ icon: Icon, label }) => (
-          <div
-            key={label}
-            className="flex items-center gap-3 px-3 py-2 rounded text-warm-400 cursor-not-allowed select-none"
-          >
-            <Icon size={18} strokeWidth={1.75} />
-            <span className="text-sm font-medium">{label}</span>
-          </div>
-        ))}
+        {NAV_MAIN.map(({ icon: Icon, label, view }) => {
+          if (view) {
+            const isActive = currentView === view
+            return (
+              <button
+                key={label}
+                onClick={() => onNavigate(view)}
+                className={`
+                  flex items-center gap-3 px-3 py-2 rounded w-full text-left
+                  transition-all duration-150
+                  ${isActive
+                    ? 'bg-coral-50 text-coral-500 font-semibold'
+                    : 'text-warm-700 hover:bg-warm-100 font-medium'}
+                `}
+              >
+                <Icon
+                  size={18}
+                  strokeWidth={isActive ? 2.25 : 1.75}
+                  className={isActive ? 'text-coral-400' : 'text-warm-500'}
+                />
+                <span className="text-sm">{label}</span>
+                {isActive && (
+                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-coral-400" />
+                )}
+              </button>
+            )
+          }
+          return (
+            <div
+              key={label}
+              className="flex items-center gap-3 px-3 py-2 rounded text-warm-400 cursor-not-allowed select-none"
+            >
+              <Icon size={18} strokeWidth={1.75} />
+              <span className="text-sm font-medium">{label}</span>
+            </div>
+          )
+        })}
 
         {/* AUTOMATION section */}
         <div className="mt-5 mb-1.5 px-3">

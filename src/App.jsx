@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 import Sidebar from './components/Sidebar.jsx'
 import TopBar from './components/TopBar.jsx'
+import Overview from './views/Overview.jsx'
 import TemplatesList from './views/TemplatesList.jsx'
 import TemplateEditor from './views/TemplateEditor.jsx'
 import OnboardingList from './views/OnboardingList.jsx'
@@ -9,6 +10,7 @@ import DeptDefaults from './views/DeptDefaults.jsx'
 import { templates as initialTemplates, activityFeed as initialActivity, departmentDefaults as initialDeptDefaults } from './data/mockData.js'
 
 const SIDEBAR_ACTIVE = {
+  overview:         'overview',
   templates:        'templates',
   'template-new':   'templates',
   'template-edit':  'templates',
@@ -39,7 +41,7 @@ function Skeleton() {
 }
 
 export default function App() {
-  const [currentView, setCurrentView]   = useState('templates')
+  const [currentView, setCurrentView]   = useState('overview')
   const [viewParams, setViewParams]     = useState({})
   const [loading, setLoading]           = useState(false)
   const [viewKey, setViewKey]           = useState(0)
@@ -111,6 +113,8 @@ export default function App() {
 
   function renderView() {
     switch (currentView) {
+      case 'overview':
+        return <Overview navigate={navigate} />
       case 'templates':
         return <TemplatesList navigate={navigate} templates={templates} toast={viewParams.toast} onDuplicate={duplicateTemplate} onDelete={deleteTemplate} />
       case 'template-new':

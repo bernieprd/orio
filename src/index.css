@@ -43,6 +43,19 @@
   }
 }
 
+/* ── Scroll reveal ─────────────────────────────────────────────────────── */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* ── View transitions ──────────────────────────────────────────────────── */
 
 @keyframes fadeInUp {
