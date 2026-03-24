@@ -244,7 +244,7 @@ export const activityFeed = [
       { name: 'Salesforce',       status: 'retried', time: '2.1s' },
       { name: 'Slack',            status: 'success', time: '0.8s' },
       { name: 'Notion',           status: 'success', time: '0.9s' },
-      { name: 'Gong',             status: 'success', time: '0.7s' },
+      { name: 'Gong',             status: 'skipped', time: null   },
       { name: 'HubSpot',          status: 'success', time: '0.8s' },
       { name: 'Google Workspace', status: 'success', time: '0.8s' },
     ],

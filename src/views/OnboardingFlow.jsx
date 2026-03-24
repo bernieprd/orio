@@ -41,6 +41,8 @@ function formatDate(iso) {
 
 function DatePicker({ value, onChange }) {
   const [open, setOpen]         = useState(false)
+  const [above, setAbove]       = useState(false)
+  const [alignRight, setAlignRight] = useState(false)
   const ref                     = useRef(null)
   const today                   = new Date()
   const parsed                  = value ? new Date(value + 'T12:00:00') : null
@@ -54,6 +56,15 @@ function DatePicker({ value, onChange }) {
     }
     document.addEventListener('mousedown', handle)
     return () => document.removeEventListener('mousedown', handle)
+  }, [open])
+
+  useEffect(() => {
+    if (!open || !ref.current) return
+    const CALENDAR_H = 300
+    const CALENDAR_W = 272
+    const rect = ref.current.getBoundingClientRect()
+    setAbove(rect.bottom + CALENDAR_H > window.innerHeight && rect.top > CALENDAR_H)
+    setAlignRight(rect.left + CALENDAR_W > window.innerWidth)
   }, [open])
 
   const daysInMonth    = new Date(viewYear, viewMonth + 1, 0).getDate()
@@ -99,7 +110,9 @@ function DatePicker({ value, onChange }) {
 
       {open && (
         <div
-          className="absolute top-full left-0 mt-1.5 z-30 bg-white border border-warm-200 rounded-lg shadow-warm-lg p-4 w-[272px]"
+          className={`absolute z-30 bg-white border border-warm-200 rounded-lg shadow-warm-lg p-4 w-[272px]
+            ${above ? 'bottom-full mb-1.5' : 'top-full mt-1.5'}
+            ${alignRight ? 'right-0' : 'left-0'}`}
           style={{ animation: 'modalIn 0.15s ease-out' }}
         >
           {/* Month navigation */}
@@ -150,7 +163,7 @@ function DatePicker({ value, onChange }) {
 
 // ─── Stepper ─────────────────────────────────────────────────────────────────
 
-const STEPS = ['Employee Details', 'Review Access', 'Provision']
+const STEPS = ['Employee details', 'Review access', 'Provision']
 
 function Stepper({ currentStep }) {
   return (
@@ -219,11 +232,11 @@ function EmployeeStep({ templates, onNext }) {
   const canContinue = form.firstName && form.lastName && form.email && form.department && form.role && form.startDate
 
   return (
-    <div className="max-w-[560px]">
+    <div className="w-full max-w-[560px]">
       <div className="bg-white rounded-lg border border-warm-200 p-6">
 
         {/* First + Last name */}
-        <div className="grid grid-cols-2 gap-4 mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           <Field label="First Name">
             <input type="text" value={form.firstName} onChange={e => set('firstName', e.target.value)}
               placeholder="Maria" className={inputCls} />
@@ -327,7 +340,7 @@ function EmployeeStep({ templates, onNext }) {
           disabled={!canContinue}
           className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 disabled:bg-warm-200 disabled:text-warm-400 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors duration-150 shadow-warm"
         >
-          Next: Review Access
+          Next: Review access
           <ArrowRight size={15} strokeWidth={2.5} />
         </button>
       </div>
@@ -341,8 +354,11 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
   const [currentTemplate, setCurrentTemplate]     = useState(initialTemplate)
   const [apps, setApps]                           = useState([...(initialTemplate?.apps ?? [])])
   const [removedApps, setRemovedApps]             = useState([])
+  const [appRoles, setAppRoles]                   = useState({})
   const [showAppModal, setShowAppModal]           = useState(false)
   const [showTemplateModal, setShowTemplateModal] = useState(false)
+
+  function getRole(appName) { return appRoles[appName] ?? 'Member' }
 
   function toggleApp(app) {
     setApps(prev => prev.some(a => a.name === app.name) ? prev.filter(a => a.name !== app.name) : [...prev, app])
@@ -357,7 +373,7 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
   const deptColors = departmentColors[employee.department] ?? { bg: 'bg-warm-100', text: 'text-warm-600' }
 
   return (
-    <div className="max-w-[640px]">
+    <div className="w-full max-w-[640px]">
 
       {/* Employee summary card */}
       <div className="bg-white rounded-lg border border-warm-200 p-4 mb-4 flex items-start gap-4">
@@ -394,7 +410,7 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
             <span className="bg-warm-200 text-warm-600 text-[11px] font-bold px-1.5 py-0.5 rounded-full">{apps.length}</span>
           </span>
           <button onClick={() => setShowAppModal(true)} className="text-xs font-semibold text-coral-400 hover:text-coral-500 transition-colors">
-            + Add App
+            + Add app
           </button>
         </div>
         {apps.length === 0 ? (
@@ -404,7 +420,9 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
             <div key={app.name} className={`flex items-center gap-3 px-4 py-3 group ${i < apps.length - 1 ? 'border-b border-warm-100' : ''}`}>
               <AppIcon name={app.name} icon={app.icon} size={32} />
               <span className="flex-1 text-sm font-medium text-warm-800">{app.name}</span>
-              <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Will be provisioned</span>
+              <span className="text-xs font-semibold text-warm-600 bg-warm-100 border border-warm-200 px-2 py-0.5 rounded-full">
+                {getRole(app.name)}
+              </span>
               <button onClick={() => removeApp(app.name)} className="opacity-0 group-hover:opacity-100 p-1 rounded text-warm-400 hover:text-red-400 hover:bg-red-50 transition-all duration-150 ml-1">
                 <X size={14} />
               </button>
@@ -430,7 +448,7 @@ function ReviewStep({ employee, initialTemplate, templates, onProvision, onBack 
             disabled={apps.length === 0}
             className="flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 disabled:bg-warm-200 disabled:text-warm-400 disabled:cursor-not-allowed text-white text-sm font-semibold transition-colors duration-150 shadow-warm min-h-[44px]"
           >
-            Provision Access <ArrowRight size={15} strokeWidth={2.5} />
+            Provision access <ArrowRight size={15} strokeWidth={2.5} />
           </button>
         </div>
       </div>
@@ -552,7 +570,7 @@ function ProvisioningStep({ employee, apps, removedApps = [], template, onSaveOn
                 time:   null,
               })),
             ],
-            status:          (retried || apps.some(a => statuses[a.name] === 'skipped')) ? 'partial' : 'completed',
+            status:          apps.some(a => statuses[a.name] === 'skipped') ? 'partial' : 'completed',
             dateProvisioned: dateStr,
             provisionedBy:   'Alex M.',
             duration:        el + 's',
@@ -577,7 +595,7 @@ function ProvisioningStep({ employee, apps, removedApps = [], template, onSaveOn
           </p>
           <div className="flex gap-3">
             <button onClick={handleConfirm} className="flex-1 py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 text-white text-sm font-semibold transition-colors duration-150">
-              Confirm & Provision
+              Confirm & provision
             </button>
             <button onClick={onReset} className="px-4 py-2.5 rounded-lg text-sm font-medium text-warm-500 hover:bg-warm-100 transition-colors duration-150">
               Cancel
@@ -589,7 +607,7 @@ function ProvisioningStep({ employee, apps, removedApps = [], template, onSaveOn
   }
 
   return (
-    <div className="max-w-[560px]">
+    <div className="w-full max-w-[560px]">
       <div className="mb-6">
         <h2 className="text-lg font-extrabold text-warm-900">
           {phase === 'done' ? `Access provisioned for ${employee.firstName}` : `Provisioning access for ${employee.firstName}...`}
@@ -689,10 +707,10 @@ function ProvisioningStep({ employee, apps, removedApps = [], template, onSaveOn
           </div>
           <div className="flex items-center gap-3" style={{ animation: 'fadeUp 0.3s 0.2s ease-out both' }}>
             <button onClick={onViewActivity} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 text-white text-sm font-semibold transition-colors duration-150 shadow-warm">
-              View in Onboarding
+              View in onboarding
             </button>
             <button onClick={onReset} className="px-4 py-2.5 rounded-lg text-sm font-medium text-warm-700 hover:bg-warm-100 border border-warm-200 transition-colors duration-150">
-              Onboard Another Employee
+              Onboard another employee
             </button>
           </div>
         </>
@@ -748,9 +766,9 @@ export default function OnboardingFlow({ navigate, templates, onSaveOnboarding }
   return (
     <div>
       <button onClick={() => navigate('onboarding')} className="flex items-center gap-1.5 text-sm text-warm-500 hover:text-warm-800 mb-6 transition-colors duration-150">
-        <ArrowLeft size={15} /> Back to Onboarding
+        <ArrowLeft size={15} /> Back to onboarding
       </button>
-      <h1 className="text-xl font-extrabold text-warm-900 mb-8">New Onboarding</h1>
+      <h1 className="text-xl font-extrabold text-warm-900 mb-8">New onboarding</h1>
       <Stepper currentStep={step} />
 
       {step === 1 && <EmployeeStep templates={readyTemplates} onNext={handleStep1} />}

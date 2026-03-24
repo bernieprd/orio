@@ -21,13 +21,6 @@ export default function AppSearchModal({ addedApps, onToggle, onClose }) {
     app.category.toLowerCase().includes(query.toLowerCase())
   )
 
-  // Sort: not-added first
-  const sorted = [...filtered].sort((a, b) => {
-    const aAdded = addedNames.has(a.name) ? 1 : 0
-    const bAdded = addedNames.has(b.name) ? 1 : 0
-    return aAdded - bAdded
-  })
-
   return (
     /* Backdrop */
     <div
@@ -42,7 +35,7 @@ export default function AppSearchModal({ addedApps, onToggle, onClose }) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-warm-100">
-          <h3 className="font-bold text-warm-900 text-sm">Add Application</h3>
+          <h3 className="font-bold text-warm-900 text-sm">Add application</h3>
           <button onClick={onClose} className="text-warm-400 hover:text-warm-700 transition-colors p-0.5">
             <X size={16} />
           </button>
@@ -65,10 +58,10 @@ export default function AppSearchModal({ addedApps, onToggle, onClose }) {
 
         {/* App list */}
         <div className="overflow-y-auto flex-1">
-          {sorted.length === 0 ? (
+          {filtered.length === 0 ? (
             <div className="py-10 text-center text-sm text-warm-400">No apps match "{query}"</div>
           ) : (
-            sorted.map((app) => {
+            filtered.map((app) => {
               const isAdded = addedNames.has(app.name)
               return (
                 <button
@@ -77,10 +70,7 @@ export default function AppSearchModal({ addedApps, onToggle, onClose }) {
                   className={`
                     w-full flex items-center gap-3 px-4 py-3 text-left
                     transition-colors duration-100
-                    ${isAdded
-                      ? 'opacity-60 hover:bg-warm-50'
-                      : 'hover:bg-warm-50'
-                    }
+                    hover:bg-warm-50
                   `}
                 >
                   <AppIcon name={app.name} icon={app.icon} size={32} />

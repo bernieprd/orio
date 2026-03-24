@@ -4,11 +4,11 @@ function getBreadcrumbs(currentView, viewParams) {
   switch (currentView) {
     case 'overview':       return ['Overview']
     case 'templates':      return ['Automation', 'Templates']
-    case 'template-new':   return ['Automation', 'Templates', 'New Template']
+    case 'template-new':   return ['Automation', 'Templates', 'New template']
     case 'template-edit':  return ['Automation', 'Templates', viewParams?.name ?? 'Edit']
     case 'onboarding':     return ['Automation', 'Onboarding']
     case 'onboarding-new': return ['Automation', 'Onboarding', 'New']
-    case 'dept-defaults':  return ['Automation', 'Templates', 'Dept. Defaults']
+    case 'dept-defaults':  return ['Automation', 'Templates', 'Dept. defaults']
     default:               return ['Automation']
   }
 }

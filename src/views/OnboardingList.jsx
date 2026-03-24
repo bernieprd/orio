@@ -145,14 +145,14 @@ function DetailDrawer({ entry, onClose }) {
           {/* App breakdown */}
           {entry.appBreakdown?.length > 0 && (
             <div className="px-6 py-5">
-              <h3 className="text-xs font-bold text-warm-400 uppercase tracking-wider mb-4">App Breakdown</h3>
+              <h3 className="text-xs font-bold text-warm-400 uppercase tracking-wider mb-4">App breakdown</h3>
               <div className="flex flex-col gap-2">
                 {entry.appBreakdown.map(app => (
                   <div
                     key={app.name}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border
                       ${app.status === 'success'  ? 'bg-emerald-50/50 border-emerald-100' :
-                        app.status === 'retried'  ? 'bg-amber-50/50 border-amber-100' :
+                        app.status === 'retried'  ? 'bg-emerald-50/50 border-emerald-100' :
                         app.status === 'skipped'  ? 'bg-warm-50 border-warm-200' :
                         app.status === 'removed'  ? 'bg-warm-50 border-warm-200 opacity-60' :
                                                     'bg-red-50/50 border-red-100'}`}
@@ -165,8 +165,11 @@ function DetailDrawer({ entry, onClose }) {
                       {app.time && <span className="text-xs text-warm-400">{app.time}</span>}
                       {app.status === 'success' && <CheckCircle2 size={15} className="text-emerald-500" />}
                       {app.status === 'retried' && (
-                        <span className="flex items-center gap-1 text-xs font-semibold text-amber-600">
-                          <AlertTriangle size={12} /> Retried
+                        <span className="flex items-center gap-1.5">
+                          <span className="flex items-center gap-1 text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-100 px-1.5 py-0.5 rounded-full">
+                            <AlertTriangle size={11} /> Retried
+                          </span>
+                          <CheckCircle2 size={15} className="text-emerald-500" />
                         </span>
                       )}
                       {app.status === 'skipped' && (
@@ -211,7 +214,7 @@ export default function OnboardingList({ navigate, activityFeed, toast: initialT
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
         <div>
           <h1 className="text-xl font-extrabold text-warm-900">Onboarding</h1>
           <p className="text-sm text-warm-400 mt-0.5">
@@ -223,33 +226,33 @@ export default function OnboardingList({ navigate, activityFeed, toast: initialT
           className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 active:bg-coral-600 text-white text-sm font-semibold transition-colors duration-150 shadow-warm"
         >
           <Plus size={16} strokeWidth={2.5} />
-          New Onboarding
+          New onboarding
         </button>
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <StatCard
           icon={<Users size={16} />}
-          label="Employees Onboarded"
+          label="Employees onboarded"
           value={activityFeed.length}
           sub="all time"
         />
         <StatCard
           icon={<Zap size={16} />}
-          label="Apps Provisioned"
+          label="Apps provisioned"
           value={totalApps}
           sub="all time"
         />
         <StatCard
           icon={<Clock size={16} />}
-          label="Avg. Provision Time"
+          label="Avg. provision time"
           value={avgTime}
           sub="per onboarding"
         />
         <StatCard
           icon={<AlertOctagon size={16} />}
-          label="Failed Provisions"
+          label="Failed provisions"
           value={failCount}
           sub="retried or partial"
           warning={failCount > 0}
@@ -259,12 +262,12 @@ export default function OnboardingList({ navigate, activityFeed, toast: initialT
       {/* Feed */}
       <div className="bg-white rounded-lg border border-warm-200 overflow-hidden">
         <div className="px-5 py-3 border-b border-warm-100 bg-warm-50">
-          <span className="text-xs font-bold text-warm-400 uppercase tracking-wider">Recent Activity</span>
+          <span className="text-xs font-bold text-warm-400 uppercase tracking-wider">Recent activity</span>
         </div>
 
         {activityFeed.length === 0 ? (
           <div className="py-16 text-center text-sm text-warm-400">
-            No onboardings yet. Click "New Onboarding" to get started.
+            No onboardings yet. Click "New onboarding" to get started.
           </div>
         ) : (
           activityFeed.map((entry, i) => {
@@ -273,13 +276,14 @@ export default function OnboardingList({ navigate, activityFeed, toast: initialT
               <div
                 key={entry.id}
                 onClick={() => setSelected(entry)}
-                className={`flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-warm-50 transition-colors duration-100 ${i < activityFeed.length - 1 ? 'border-b border-warm-100' : ''}`}
+                className={`flex items-start gap-4 px-5 py-4 cursor-pointer hover:bg-warm-50 transition-colors duration-100 ${i < activityFeed.length - 1 ? 'border-b border-warm-100' : ''}`}
               >
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${avatarColor(entry.employee)}`}>
+                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5 ${avatarColor(entry.employee)}`}>
                   {entry.initials}
                 </div>
 
                 <div className="flex-1 min-w-0">
+                  {/* Row 1: name, department, template */}
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-semibold text-warm-900">{entry.employee}</span>
                     {entry.department && (
@@ -287,24 +291,19 @@ export default function OnboardingList({ navigate, activityFeed, toast: initialT
                         {entry.department}
                       </span>
                     )}
+                    <span className="text-xs text-warm-500">
+                      via <span className="font-medium text-warm-700">{entry.template}</span>
+                    </span>
                   </div>
-                  <div className="text-xs text-warm-500 mt-0.5">
-                    Onboarded with template: <span className="font-medium text-warm-700">{entry.template}</span>
+                  {/* Row 2: apps, status, date */}
+                  <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                    <span className="flex items-center gap-1 text-xs text-warm-500">
+                      <Layers size={12} />
+                      {entry.apps} apps
+                    </span>
+                    <StatusBadge status={entry.status} />
+                    <span className="text-xs text-warm-400">{entry.time} · by {entry.provisionedBy}</span>
                   </div>
-                </div>
-
-                <div className="flex items-center gap-1 text-xs text-warm-500 flex-shrink-0">
-                  <Layers size={12} />
-                  {entry.apps} apps
-                </div>
-
-                <div className="flex-shrink-0">
-                  <StatusBadge status={entry.status} />
-                </div>
-
-                <div className="text-xs text-warm-400 flex-shrink-0 text-right min-w-[80px]">
-                  <div>{entry.time}</div>
-                  <div className="mt-0.5">by {entry.provisionedBy}</div>
                 </div>
               </div>
             )

@@ -192,7 +192,7 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
         className="flex items-center gap-1.5 text-sm text-warm-500 hover:text-warm-800 mb-6 transition-colors duration-150"
       >
         <ArrowLeft size={15} />
-        Back to Templates
+        Back to templates
       </button>
 
       {/* Page title */}
@@ -201,7 +201,7 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
           <LayoutTemplate size={18} className="text-coral-400" />
         </div>
         <h1 className="text-xl font-extrabold text-warm-900">
-          {isNew ? 'New Template' : `Edit: ${existing?.name}`}
+          {isNew ? 'New template' : `Edit: ${existing?.name}`}
         </h1>
       </div>
 
@@ -215,7 +215,7 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
             {/* Template Name */}
             <div>
               <label className="block text-xs font-bold text-warm-600 uppercase tracking-wider mb-2">
-                Template Name
+                Template name
               </label>
               <input
                 type="text"
@@ -262,24 +262,28 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
 
             {/* Department defaults banner */}
             {defaultsBanner && (
-              <div className="mt-3 flex items-center gap-3 px-3.5 py-2.5 rounded-lg bg-violet-50 border border-violet-100">
-                <span className="text-base leading-none">✨</span>
-                <span className="flex-1 text-xs text-violet-700">
-                  <span className="font-semibold px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-600 mr-1.5 text-[10px] uppercase tracking-wide">Beta</span>
-                  Pre-fill with <span className="font-semibold">{defaultsBanner}</span> defaults?
-                </span>
-                <button
-                  onClick={applyDefaults}
-                  className="flex-shrink-0 px-2.5 py-1 rounded-md bg-violet-100 hover:bg-violet-200 text-violet-700 text-xs font-semibold transition-colors duration-150"
-                >
-                  Apply defaults
-                </button>
-                <button
-                  onClick={() => setDefaultsBanner(null)}
-                  className="flex-shrink-0 text-xs text-violet-400 hover:text-violet-600 transition-colors duration-150"
-                >
-                  No thanks
-                </button>
+              <div className="mt-3 px-3.5 py-2.5 rounded-lg bg-violet-50 border border-violet-100">
+                <div className="flex items-start gap-2 mb-2.5">
+                  <span className="text-base leading-none mt-px">✨</span>
+                  <span className="text-xs text-violet-700">
+                    <span className="font-semibold px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-600 mr-1.5 text-[10px] uppercase tracking-wide">Beta</span>
+                    Pre-fill with <span className="font-semibold">{defaultsBanner}</span> defaults?
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 ml-6">
+                  <button
+                    onClick={applyDefaults}
+                    className="px-2.5 py-1 rounded-md bg-violet-100 hover:bg-violet-200 text-violet-700 text-xs font-semibold transition-colors duration-150"
+                  >
+                    Apply defaults
+                  </button>
+                  <button
+                    onClick={() => setDefaultsBanner(null)}
+                    className="text-xs text-violet-400 hover:text-violet-600 transition-colors duration-150"
+                  >
+                    No thanks
+                  </button>
+                </div>
               </div>
             )}
 
@@ -323,7 +327,7 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
                   "
                 >
                   <Plus size={13} strokeWidth={2.5} />
-                  Add App
+                  Add app
                 </button>
               </div>
 
@@ -385,7 +389,7 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
                 bg-coral-400 hover:bg-coral-500 active:bg-coral-600 text-white
               "
             >
-              Save Template
+              Save template
             </button>
             <button
               onClick={() => navigate('templates')}
@@ -412,7 +416,7 @@ export default function TemplateEditor({ navigate, templateId, templates, onSave
             onClick={() => setShowPreview(v => !v)}
             className="lg:hidden w-full flex items-center justify-between px-4 py-3 bg-white border border-warm-200 rounded-lg text-sm font-semibold text-warm-700 hover:bg-warm-50 transition-colors mb-2"
           >
-            Live Preview
+            Live preview
             <ChevronDown size={15} className={`text-warm-400 transition-transform duration-150 ${showPreview ? 'rotate-180' : ''}`} />
           </button>
           <div className={`lg:block ${showPreview ? 'block' : 'hidden'}`}>

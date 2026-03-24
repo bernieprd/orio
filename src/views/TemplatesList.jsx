@@ -83,7 +83,7 @@ function EmptyState({ onNew }) {
         className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 text-white text-sm font-semibold transition-colors duration-150 shadow-warm"
       >
         <Plus size={16} strokeWidth={2.5} />
-        New Template
+        New template
       </button>
     </div>
   )
@@ -132,19 +132,28 @@ export default function TemplatesList({ navigate, templates, toast: initialToast
   return (
     <div>
       {/* Page header */}
-      <div className="flex flex-wrap items-start gap-4 justify-between mb-6">
+      <div className="flex items-start justify-between gap-4 mb-6">
         <div>
           <h1 className="text-xl font-extrabold text-warm-900">Templates</h1>
           <p className="text-sm text-warm-400 mt-0.5">
             Define the app access packages for each role.
           </p>
+          {/* New template — below heading on small screens */}
+          <button
+            onClick={openNew}
+            className="sm:hidden mt-3 flex items-center gap-2 px-4 py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 active:bg-coral-600 text-white text-sm font-semibold transition-colors duration-150 shadow-warm"
+          >
+            <Plus size={16} strokeWidth={2.5} />
+            New template
+          </button>
         </div>
+        {/* New template — inline on larger screens */}
         <button
           onClick={openNew}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 active:bg-coral-600 text-white text-sm font-semibold transition-colors duration-150 shadow-warm"
+          className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-lg bg-coral-400 hover:bg-coral-500 active:bg-coral-600 text-white text-sm font-semibold transition-colors duration-150 shadow-warm"
         >
           <Plus size={16} strokeWidth={2.5} />
-          New Template
+          New template
         </button>
       </div>
 
@@ -154,25 +163,27 @@ export default function TemplatesList({ navigate, templates, toast: initialToast
       ) : (
         <>
           {/* Toolbar */}
-          <div className="flex items-center gap-2 mb-4">
-            <button
-              onClick={() => setGrouped(g => !g)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors duration-150
-                ${grouped
-                  ? 'border-coral-300 bg-coral-50 text-coral-500 hover:bg-coral-100'
-                  : 'border-warm-200 bg-white text-warm-700 hover:border-warm-300 hover:bg-warm-50'
-                }`}
-            >
-              <LayoutGrid size={13} />
-              Group by dept
-            </button>
-            <SortDropdown value={sort} onChange={setSort} />
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setGrouped(g => !g)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors duration-150
+                  ${grouped
+                    ? 'border-coral-300 bg-coral-50 text-coral-500 hover:bg-coral-100'
+                    : 'border-warm-200 bg-white text-warm-700 hover:border-warm-300 hover:bg-warm-50'
+                  }`}
+              >
+                <LayoutGrid size={13} />
+                Group by dept
+              </button>
+              <SortDropdown value={sort} onChange={setSort} />
+            </div>
             <button
               onClick={() => navigate('dept-defaults')}
-              className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-violet-200 bg-violet-50 text-violet-600 hover:bg-violet-100 text-sm font-medium transition-colors duration-150"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-violet-200 bg-violet-50 text-violet-600 hover:bg-violet-100 text-sm font-medium transition-colors duration-150"
             >
               <SlidersHorizontal size={13} />
-              Dept. Defaults
+              Dept. defaults
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-500 leading-none">Beta</span>
             </button>
           </div>

@@ -53,7 +53,7 @@ export default function DeptDefaults({ deptDefaults, onSave, navigate }) {
         className="flex items-center gap-1.5 text-sm text-warm-500 hover:text-warm-800 mb-6 transition-colors duration-150"
       >
         <ArrowLeft size={15} />
-        Back to Templates
+        Back to templates
       </button>
 
       {/* Beta banner */}
@@ -69,7 +69,7 @@ export default function DeptDefaults({ deptDefaults, onSave, navigate }) {
         <div className="w-9 h-9 rounded-lg bg-violet-50 border border-violet-100 flex items-center justify-center">
           <SlidersHorizontal size={18} className="text-violet-400" />
         </div>
-        <h1 className="text-xl font-extrabold text-warm-900">Department Defaults</h1>
+        <h1 className="text-xl font-extrabold text-warm-900">Department defaults</h1>
       </div>
       <p className="text-sm text-warm-500 mb-6 ml-12">
         Configure which apps are pre-filled when creating a template for each department. These are starting points — admins can always customize per template.
@@ -141,7 +141,7 @@ export default function DeptDefaults({ deptDefaults, onSave, navigate }) {
                     className="mt-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-coral-50 hover:bg-coral-100 text-coral-500 hover:text-coral-600 text-xs font-semibold border border-coral-100 hover:border-coral-200 transition-all duration-150"
                   >
                     <Plus size={13} strokeWidth={2.5} />
-                    Add App
+                    Add app
                   </button>
                 </div>
               )}
